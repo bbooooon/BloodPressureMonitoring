@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "567256790490",
+    "firebase_url": "https://bloodpressuremonitoring-672e5.firebaseio.com",
+    "project_id": "bloodpressuremonitoring-672e5",
+    "storage_bucket": "bloodpressuremonitoring-672e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567256790490:android:c72707bc4643a161",
+        "android_client_info": {
+          "package_name": "com.example.bloodpressuremonitoring"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "567256790490-s3tef34g0c8b3b136r0b7vg1k9dfpq3r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bloodpressuremonitoring",
+            "certificate_hash": "20855253d3a905bf9ef8162e1b8c360a809e33c1"
+          }
+        },
+        {
+          "client_id": "567256790490-ac8mn93p3ssgj6u7libtmk4elaqvekq4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqTejMPvyhUUZvUirlXSXSifvRC30kXIg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "567256790490-ac8mn93p3ssgj6u7libtmk4elaqvekq4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
