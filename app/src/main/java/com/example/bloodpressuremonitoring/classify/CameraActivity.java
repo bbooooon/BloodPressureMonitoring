@@ -80,8 +80,8 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         int width = size.x/3;
         int height = width/3*4;
 
-        int left = size.x*55/100;
-        int top = size.y*25/100;
+        int left = size.x*60/100;
+        int top = size.y*15/100;
         int right = size.x*5/100;
         int bottom = size.y*38/100;
 

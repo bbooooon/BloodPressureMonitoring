@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.hardware.Camera
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.graphics.Point
 import android.util.Log
 import android.widget.Toast
 import com.example.bloodpressuremonitoring.R
@@ -31,7 +32,8 @@ import java.io.File
 
 
 class PreviewActivity : AppCompatActivity() {
-    private var result:PredictionResult? = null
+    private var result:Int? = null
+    private var prediction:PredictionResult? = null
     private var fpath:String? = null
     private var imgStr:String? = null
     lateinit var loadingDialog: ProgressDialog
@@ -70,9 +72,17 @@ class PreviewActivity : AppCompatActivity() {
         val angle: Int = 90
         bitmap = RotateBitmap(bitmap,angle.toFloat())
 
-        val x:Int = bitmap.width*53/100
-        val y:Int = bitmap.height*28/100
-        var resize = Bitmap.createBitmap(bitmap, x, y,(bitmap.width/4).toInt(), (bitmap.height/4).toInt())
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        val width = size.x*2/3
+        val height = width / 3 * 4
+        Log.e("display size", size.x.toString() + " x " + size.y)
+        Log.e("display size", (bitmap.width).toString() + " x " + (bitmap.height))
+        val x:Int = bitmap.width*58/100
+        val y:Int = bitmap.height*18/100
+//        var resize = Bitmap.createBitmap(bitmap, x, y,(bitmap.width/4).toInt(), (bitmap.height/4).toInt())
+        var resize = Bitmap.createBitmap(bitmap, x, y,(width).toInt(), (height).toInt())
         resize = Bitmap.createScaledBitmap(resize, (resize.width*0.5).toInt(), (resize.height*0.5).toInt(), false)
         preview_imageView.setImageBitmap(resize)
 
@@ -139,14 +149,19 @@ class PreviewActivity : AppCompatActivity() {
                 if(response.isSuccessful) {
                     loadingDialog.dismiss()
                     val pre = response.body()!!
-                    result = pre.msg
+                    result = pre.result
+                    prediction = pre.msg
+                    Log.e(" server result", result.toString())
 //                    Toast.makeText(applicationContext, result, Toast.LENGTH_LONG).show()
-                    if (result != null) {
+                    if (prediction != null && result==1) {
                         val intent = Intent(this@PreviewActivity, ResultActivity::class.java)
-                        intent.putExtra("dia", result!!.dia.toString())
-                        intent.putExtra("sys", result!!.sys.toString())
-                        intent.putExtra("pulse", result!!.pulse.toString())
+                        intent.putExtra("dia", prediction!!.dia.toString())
+                        intent.putExtra("sys", prediction!!.sys.toString())
+                        intent.putExtra("pulse", prediction!!.pulse.toString())
                         startActivity(intent)
+                    }
+                    else if (result == 0) {
+                        Toast.makeText(applicationContext, "server error", Toast.LENGTH_LONG).show()
                     }
                 }
                 else{
