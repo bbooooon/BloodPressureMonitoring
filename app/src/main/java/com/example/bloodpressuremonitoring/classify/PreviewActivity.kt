@@ -31,7 +31,7 @@ import java.io.File
 
 
 class PreviewActivity : AppCompatActivity() {
-    private var result:String? = null
+    private var result:PredictionResult? = null
     private var fpath:String? = null
     private var imgStr:String? = null
     lateinit var loadingDialog: ProgressDialog
@@ -73,7 +73,7 @@ class PreviewActivity : AppCompatActivity() {
         val x:Int = bitmap.width*53/100
         val y:Int = bitmap.height*28/100
         var resize = Bitmap.createBitmap(bitmap, x, y,(bitmap.width/4).toInt(), (bitmap.height/4).toInt())
-        resize = Bitmap.createScaledBitmap(resize, (resize.width*0.2).toInt(), (resize.height*0.2).toInt(), false)
+        resize = Bitmap.createScaledBitmap(resize, (resize.width*0.5).toInt(), (resize.height*0.5).toInt(), false)
         preview_imageView.setImageBitmap(resize)
 
         Log.e("resize resolution", resize.width.toString()+"x"+resize.height)
@@ -95,9 +95,9 @@ class PreviewActivity : AppCompatActivity() {
             CameraUtil.updateMediaScanner(this, file)
             fpath = file.absolutePath
 
-//            callRetrofit()
-            val intent = Intent(this@PreviewActivity, ResultActivity::class.java)
-            startActivity(intent)
+            callRetrofit()
+//            val intent = Intent(this@PreviewActivity, ResultActivity::class.java)
+//            startActivity(intent)
         }
     }
 
@@ -121,7 +121,8 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         val retrofit = Retrofit.Builder()
-                .baseUrl("http://103.76.181.221/")
+//                .baseUrl("http://35.198.247.234/")
+                .baseUrl("http://103.76.181.221:3000/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
@@ -129,20 +130,22 @@ class PreviewActivity : AppCompatActivity() {
         val file = File(fpath)
 
         val reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
-        val body = MultipartBody.Part.createFormData("uploaded_file", file.getName(), reqFile)
+        val body = MultipartBody.Part.createFormData("image", file.getName(), reqFile)
 
         val service = retrofit.create(Service::class.java)
         val callservice: Call<Prediction> = service.postImage(body)
         callservice.enqueue(object : Callback<Prediction> {
             override fun onResponse(call: Call<Prediction>, response: Response<Prediction>) {
                 if(response.isSuccessful) {
-                    val pre = response.body()!!
-                    result = pre.msg.get(0)
                     loadingDialog.dismiss()
+                    val pre = response.body()!!
+                    result = pre.msg
 //                    Toast.makeText(applicationContext, result, Toast.LENGTH_LONG).show()
                     if (result != null) {
                         val intent = Intent(this@PreviewActivity, ResultActivity::class.java)
-                        intent.putExtra("result", result)
+                        intent.putExtra("dia", result!!.dia.toString())
+                        intent.putExtra("sys", result!!.sys.toString())
+                        intent.putExtra("pulse", result!!.pulse.toString())
                         startActivity(intent)
                     }
                 }

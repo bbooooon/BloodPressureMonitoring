@@ -11,6 +11,6 @@ import retrofit2.http.Part
  */
 interface Service{
     @Multipart
-    @POST("run/run.php")
+    @POST("/predict")
     fun postImage(@Part file: MultipartBody.Part): Call<Prediction>
 }

@@ -47,9 +47,11 @@ class ResultActivity : AppCompatActivity() {
         var bitmap = BitmapFactory.decodeByteArray(CameraUtil.bytedata, 0, CameraUtil.bytedata.size)
         imageView3.setImageBitmap(bitmap)
 
-//        val intent1 = intent.extras
-        val result = "123"
-//        val result = intent1.getString("result")
+        val intent1 = intent.extras
+//        val result = "123"
+        val dia = intent1.getString("dia")
+        val sys = intent1.getString("sys")
+        val pulse = intent1.getString("pulse")
 //
 //        dataReference = FirebaseDatabase.getInstance().getReference("Medicine_info")
 //        dataReference.child(result).addValueEventListener(object : ValueEventListener {
@@ -60,9 +62,9 @@ class ResultActivity : AppCompatActivity() {
 //                val message = p0!!.getValue(MedicineInfo::class.java)
 //                val msgObject = message!!
 //
-                sys_text.setText("SYS : " + result)
-                dia_text.setText("DIA : " + result)
-                pulse_text.setText("PULSE : " + result)
+                sys_text.setText("Systolic : " + sys + " mmHg")
+                dia_text.setText("Diastolic : " + dia + " mmHg")
+                pulse_text.setText("Heart rate : " + pulse + " min")
 //            }
 //        })
 

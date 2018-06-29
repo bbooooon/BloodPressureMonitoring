@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import com.example.bloodpressuremonitoring.R
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_signup.*
 
@@ -19,7 +22,7 @@ class SignupFragment : Fragment() {
     private var password: String = ""
     private var confirm_pass: String = ""
     private var username_list: MutableList<String> = mutableListOf()
-
+    lateinit var  mAuth: FirebaseAuth
     lateinit var dataReference: DatabaseReference
     lateinit var msgList: MutableList<AddUser>
 
@@ -54,7 +57,7 @@ class SignupFragment : Fragment() {
                 else if (password != confirm_pass) {
                     Toast.makeText(context, "Incorrect password.", Toast.LENGTH_SHORT).show()
                 }
-                else if (password.length < 4) {
+                else if (password.length < 6) {
                     Toast.makeText(context, "Password is too short.", Toast.LENGTH_SHORT).show()
                 }
                 else {
@@ -92,5 +95,16 @@ class SignupFragment : Fragment() {
         dataReference.child(messageId).setValue(journalEntry1).addOnCompleteListener {
             Toast.makeText(context, "Registration Success", Toast.LENGTH_SHORT).show()
         }
+
+        mAuth = FirebaseAuth.getInstance()
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this.activity, OnCompleteListener<AuthResult> { task ->
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(context, "Authentication failed." + task.getException(),Toast.LENGTH_SHORT).show();
+                    } else {
+                        val intent = Intent(this.context, MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                })
     }
 }
