@@ -7,25 +7,77 @@
     android:background="@color/lightblue"
     tools:context=".classify.PreviewActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/camera_toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/toolbarblue"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
-        <TextView
-            android:id="@+id/toolbarText2"
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/camera_toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/app_name"
-            android:textColor="@android:color/background_light"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            tools:layout_editor_absoluteX="110dp"
-            tools:layout_editor_absoluteY="15dp" />
-    </android.support.v7.widget.Toolbar>
+            android:background="@color/toolbarblue"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/toolbarText2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/app_name"
+                android:textColor="@android:color/background_light"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:layout_editor_absoluteX="110dp"
+                tools:layout_editor_absoluteY="15dp" />
+        </android.support.v7.widget.Toolbar>
+
+        <ImageView
+            android:id="@+id/preview_imageView"
+            android:layout_width="match_parent"
+            android:layout_height="323dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/spinner"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.555"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/camera_toolbar"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/bg_app_logo" />
+
+        <Spinner
+            android:id="@+id/location_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:foreground="@color/common_google_signin_btn_text_dark_disabled"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="397dp" />
+
+        <Spinner
+            android:id="@+id/posture_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:foreground="@color/common_google_signin_btn_text_dark_disabled"
+            android:paddingBottom="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="397dp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -67,20 +119,6 @@
             tools:layout_editor_absoluteX="67dp"
             tools:layout_editor_absoluteY="492dp" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/preview_imageView"
-        android:layout_width="335dp"
-        android:layout_height="441dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/camera_toolbar"
-        app:srcCompat="@drawable/bg_app_logo" />
 
 
 </android.support.constraint.ConstraintLayout>
