@@ -13,10 +13,16 @@ import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.graphics.Point
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.bloodpressuremonitoring.R
 import com.example.bloodpressuremonitoring.ResultActivity
 import com.example.bloodpressuremonitoring.user.MainActivity
+import com.example.bloodpressuremonitoring.user.User
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_preview.*
@@ -29,15 +35,23 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 class PreviewActivity : AppCompatActivity() {
     private var result:Int? = null
     private var prediction:PredictionResult? = null
     private var fpath:String? = null
-    private var imgStr:String? = null
     lateinit var loadingDialog: ProgressDialog
     private val cameraId = Camera.CameraInfo.CAMERA_FACING_BACK
+    private val location = listOf<String>("--- เลือกสถานที่วัด ---", "บ้าน", "โรงพยาบาล")
+    private val posture = listOf<String>("--- เลือกท่าการวัด ---", "ท่านั่ง", "ท่านอน")
+    lateinit var dataReference: DatabaseReference
+    private var loc_position: Int? = null
+    private var pos_position: Int? = null
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         getMenuInflater().inflate(R.menu.menu_add, menu)
@@ -92,6 +106,30 @@ class PreviewActivity : AppCompatActivity() {
         val byteArray = stream.toByteArray()
         CameraUtil.bytedata = byteArray
 
+        val adapterLocation = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, location);
+        location_spinner.setAdapter(adapterLocation)
+
+        val adapterPosture = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, posture);
+        posture_spinner.setAdapter(adapterPosture)
+
+        location_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View, p: Int, id: Long) {
+                loc_position = p
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+
+        posture_spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View, p: Int, id: Long) {
+                pos_position = p
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+
         preview_backbtn.setOnClickListener {
             finish()
             val intent = Intent(this, CameraActivity::class.java)
@@ -99,13 +137,31 @@ class PreviewActivity : AppCompatActivity() {
         }
 
         preview_submitbtn.setOnClickListener {
-            val file = CameraUtil.savePicture();
-            val orientation = CameraUtil.getCameraDisplayOrientation(this, cameraId)
-            CameraUtil.setImageOrientation(file, orientation)
-            CameraUtil.updateMediaScanner(this, file)
-            fpath = file.absolutePath
+            if(loc_position == 0){
+                Toast.makeText(applicationContext, "กรุณาเลือกสถานที่การวัด", Toast.LENGTH_LONG).show()
+            }
+            else if(pos_position == 0){
+                Toast.makeText(applicationContext, "กรุณาเลือกท่าในการวัด", Toast.LENGTH_LONG).show()
+            }
+            else if(loc_position != 0 && pos_position != 0){
+                val file = CameraUtil.savePicture();
+                val orientation = CameraUtil.getCameraDisplayOrientation(this, cameraId)
+                CameraUtil.setImageOrientation(file, orientation)
+                CameraUtil.updateMediaScanner(this, file)
+                fpath = file.absolutePath
 
-            callRetrofit()
+                val date = Date()
+                val dateformat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")
+                dataReference = FirebaseDatabase.getInstance().getReference("UserData")
+                val userData = UserData("temp","temp","temp", loc_position.toString(), pos_position.toString())
+                dataReference.child(User.getUser().username).child(dateformat.format(date).toString()).setValue(userData).addOnCompleteListener {
+//                    Toast.makeText(this@PreviewActivity, "Data Added", Toast.LENGTH_SHORT).show()
+                }
+
+                callRetrofit()
+            }
+
+
 //            val intent = Intent(this@PreviewActivity, ResultActivity::class.java)
 //            startActivity(intent)
         }
@@ -154,6 +210,15 @@ class PreviewActivity : AppCompatActivity() {
                     Log.e(" server result", result.toString())
 //                    Toast.makeText(applicationContext, result, Toast.LENGTH_LONG).show()
                     if (prediction != null && result==1) {
+                        val date = Date()
+                        val dateformat = SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")
+                        dataReference = FirebaseDatabase.getInstance().getReference("UserData")
+                        val userData = UserData(prediction!!.dia.toString(), prediction!!.sys.toString(),
+                                prediction!!.pulse.toString(), loc_position.toString(), pos_position.toString())
+                        dataReference.child(User.getUser().username).child(dateformat.format(date).toString()).setValue(userData).addOnCompleteListener {
+                            Toast.makeText(this@PreviewActivity, "Data Added", Toast.LENGTH_SHORT).show()
+                        }
+
                         val intent = Intent(this@PreviewActivity, ResultActivity::class.java)
                         intent.putExtra("dia", prediction!!.dia.toString())
                         intent.putExtra("sys", prediction!!.sys.toString())

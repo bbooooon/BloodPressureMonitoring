@@ -148,6 +148,7 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         camera = CameraUtil.openCamera(cameraId);
         Camera.Parameters parameters = camera.getParameters();
         parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+        parameters.set("iso", 500);
         Camera.Size bestPictureSize = CameraUtil.getBestPictureSize(parameters.getSupportedPictureSizes());
         parameters.setPictureSize(bestPictureSize.width, bestPictureSize.height);
         if (CameraUtil.isContinuousFocusModeSupported(parameters.getSupportedFocusModes())) {
