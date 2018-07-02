@@ -1,16 +1,11 @@
 package com.example.bloodpressuremonitoring.classify;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.MediaActionSound;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -19,17 +14,14 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TextureView;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-
 import com.example.bloodpressuremonitoring.R;
 import com.example.bloodpressuremonitoring.Rss.RssActivity;
-import com.example.bloodpressuremonitoring.user.MainActivity;
-
+import com.example.bloodpressuremonitoring.SessionManager;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class CameraActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
@@ -38,6 +30,7 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
     private Button buttonRss;
     private TextureView textureViewCamera;
     private Camera camera;
+    SessionManager session;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -52,8 +45,9 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
                 break;
             case R.id.action_logout:
                 finish();
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                session.logoutUser();
+//                Intent intent = new Intent(this, MainActivity.class);
+//                startActivity(intent);
                 break;
             default:
                 break;
@@ -70,8 +64,13 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         setSupportActionBar(camera_toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        session = new SessionManager(getApplicationContext());
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        String name = user.get(SessionManager.KEY_NAME);
+        String email = user.get(SessionManager.KEY_EMAIL);
+
         buttonCapture = findViewById(R.id.capture_btn);
-//        buttonRss = findViewById(R.id.rss_btn);
         textureViewCamera = findViewById(R.id.textureView);
 
         Display display = getWindowManager().getDefaultDisplay();
@@ -148,7 +147,7 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         camera = CameraUtil.openCamera(cameraId);
         Camera.Parameters parameters = camera.getParameters();
         parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-        parameters.set("iso", 500);
+//        parameters.set("iso", 500);
         Camera.Size bestPictureSize = CameraUtil.getBestPictureSize(parameters.getSupportedPictureSizes());
         parameters.setPictureSize(bestPictureSize.width, bestPictureSize.height);
         if (CameraUtil.isContinuousFocusModeSupported(parameters.getSupportedFocusModes())) {

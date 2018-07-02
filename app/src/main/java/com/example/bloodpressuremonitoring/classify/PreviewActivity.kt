@@ -2,16 +2,13 @@ package com.example.bloodpressuremonitoring.classify
 
 import android.app.ProgressDialog
 import android.content.Intent
-import android.graphics.BitmapFactory
+import android.graphics.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.hardware.Camera
-import android.graphics.Bitmap
-import android.graphics.Matrix
-import android.graphics.Point
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -19,8 +16,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.bloodpressuremonitoring.R
 import com.example.bloodpressuremonitoring.ResultActivity
-import com.example.bloodpressuremonitoring.user.MainActivity
-import com.example.bloodpressuremonitoring.user.User
+import com.example.bloodpressuremonitoring.SessionManager
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -36,10 +32,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
-
 
 class PreviewActivity : AppCompatActivity() {
     private var result:Int? = null
@@ -52,6 +45,7 @@ class PreviewActivity : AppCompatActivity() {
     lateinit var dataReference: DatabaseReference
     private var loc_position: Int? = null
     private var pos_position: Int? = null
+    lateinit var session: SessionManager
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         getMenuInflater().inflate(R.menu.menu_add, menu)
@@ -65,8 +59,9 @@ class PreviewActivity : AppCompatActivity() {
             }
             R.id.action_logout -> {
                 finish()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                session!!.logoutUser()
+//                val intent = Intent(this, MainActivity::class.java)
+//                startActivity(intent)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -81,6 +76,8 @@ class PreviewActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(false)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        session = SessionManager(applicationContext)
 
         var bitmap = BitmapFactory.decodeByteArray(CameraUtil.bytedata, 0, CameraUtil.bytedata.size)
         val angle: Int = 90
@@ -98,6 +95,7 @@ class PreviewActivity : AppCompatActivity() {
 //        var resize = Bitmap.createBitmap(bitmap, x, y,(bitmap.width/4).toInt(), (bitmap.height/4).toInt())
         var resize = Bitmap.createBitmap(bitmap, x, y,(width).toInt(), (height).toInt())
         resize = Bitmap.createScaledBitmap(resize, (resize.width*0.5).toInt(), (resize.height*0.5).toInt(), false)
+        resize = lightenBitMap(resize)
         preview_imageView.setImageBitmap(resize)
 
         Log.e("resize resolution", resize.width.toString()+"x"+resize.height)
@@ -108,7 +106,6 @@ class PreviewActivity : AppCompatActivity() {
 
         val adapterLocation = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, location);
         location_spinner.setAdapter(adapterLocation)
-
         val adapterPosture = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, posture);
         posture_spinner.setAdapter(adapterPosture)
 
@@ -116,7 +113,6 @@ class PreviewActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View, p: Int, id: Long) {
                 loc_position = p
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
@@ -125,7 +121,6 @@ class PreviewActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View, p: Int, id: Long) {
                 pos_position = p
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
@@ -150,18 +145,18 @@ class PreviewActivity : AppCompatActivity() {
                 CameraUtil.updateMediaScanner(this, file)
                 fpath = file.absolutePath
 
-                val date = Date()
-                val dateformat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")
-                dataReference = FirebaseDatabase.getInstance().getReference("UserData")
-                val userData = UserData("temp","temp","temp", loc_position.toString(), pos_position.toString())
-                dataReference.child(User.getUser().username).child(dateformat.format(date).toString()).setValue(userData).addOnCompleteListener {
-//                    Toast.makeText(this@PreviewActivity, "Data Added", Toast.LENGTH_SHORT).show()
-                }
+//                val date = Date()
+//                val dateformat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")
+//                dataReference = FirebaseDatabase.getInstance().getReference("UserData")
+//                val user = session.userDetails
+//                val name = user[SessionManager.KEY_NAME]
+//                val userData = UserData("temp","temp","temp", loc_position.toString(), pos_position.toString())
+//                dataReference.child(name).child(dateformat.format(date).toString()).setValue(userData).addOnCompleteListener {
+////                    Toast.makeText(this@PreviewActivity, "Data Added", Toast.LENGTH_SHORT).show()
+//                }
 
                 callRetrofit()
             }
-
-
 //            val intent = Intent(this@PreviewActivity, ResultActivity::class.java)
 //            startActivity(intent)
         }
@@ -211,11 +206,13 @@ class PreviewActivity : AppCompatActivity() {
 //                    Toast.makeText(applicationContext, result, Toast.LENGTH_LONG).show()
                     if (prediction != null && result==1) {
                         val date = Date()
-                        val dateformat = SimpleDateFormat("yyyy/MM/dd-HH:mm:ss")
+                        val dateformat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")
                         dataReference = FirebaseDatabase.getInstance().getReference("UserData")
+                        val user = session.userDetails
+                        val name = user[SessionManager.KEY_NAME]
                         val userData = UserData(prediction!!.dia.toString(), prediction!!.sys.toString(),
                                 prediction!!.pulse.toString(), loc_position.toString(), pos_position.toString())
-                        dataReference.child(User.getUser().username).child(dateformat.format(date).toString()).setValue(userData).addOnCompleteListener {
+                        dataReference.child(name).child(dateformat.format(date).toString()).setValue(userData).addOnCompleteListener {
                             Toast.makeText(this@PreviewActivity, "Data Added", Toast.LENGTH_SHORT).show()
                         }
 
@@ -247,6 +244,15 @@ class PreviewActivity : AppCompatActivity() {
         })
     }
 
+    private fun lightenBitMap(bm:Bitmap): Bitmap {
+        val canvas = Canvas(bm)
+        val p: Paint= Paint(Color.RED)
+        val filter: ColorFilter = LightingColorFilter(0xFFFFFFFF.toInt() , 0x00222222)
+        p.setColorFilter(filter)
+        canvas.drawBitmap(bm, Matrix(), p)
+        return bm
+    }
+
     private fun uploadToStorage(){
         if (fpath!=null){
             val storage = FirebaseStorage.getInstance()
@@ -255,7 +261,6 @@ class PreviewActivity : AppCompatActivity() {
 
             imageRef.putBytes(CameraUtil.bytedata)
                     .addOnCompleteListener{
-
                     }
                     .addOnFailureListener {
                         Toast.makeText(this,"Storage Upload Failed",Toast.LENGTH_SHORT).show()
@@ -263,4 +268,3 @@ class PreviewActivity : AppCompatActivity() {
         }
     }
 }
-

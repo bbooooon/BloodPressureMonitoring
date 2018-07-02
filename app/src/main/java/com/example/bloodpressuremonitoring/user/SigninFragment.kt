@@ -1,6 +1,5 @@
 package com.example.bloodpressuremonitoring.user
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -11,9 +10,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import com.example.bloodpressuremonitoring.R
+import com.example.bloodpressuremonitoring.SessionManager
 import com.example.bloodpressuremonitoring.classify.CameraActivity
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_signin.*
@@ -25,6 +23,7 @@ class SigninFragment : Fragment() {
     lateinit var  mAuth: FirebaseAuth
     lateinit var dataReference: DatabaseReference
     lateinit var msgList: MutableList<AddUser>
+    lateinit var session: SessionManager
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -62,8 +61,11 @@ class SigninFragment : Fragment() {
                 if (username in username_list[index] && password.equals(password_list[index])) {
                     activity.finish()
 
+                    val user: String = username_list[userindex]
+                    val email: String = email_list[userindex]
                     Log.e("email ------>  ",email_list[userindex] )
                     Log.e("password ------>  ",password_list[userindex] )
+                    Log.e("Username ------>  ",username_list[userindex] )
 //                    mAuth = FirebaseAuth.getInstance()
 //                    mAuth.signInWithEmailAndPassword(email_list[userindex], password).addOnCompleteListener(this.activity, OnCompleteListener<AuthResult> { task ->
 //                        if (!task.isSuccessful()) {
@@ -76,6 +78,8 @@ class SigninFragment : Fragment() {
 //                            startActivity(intent)
 //                        }
 //                    })
+                    session = SessionManager(context)
+                    session!!.createLoginSession(user, email)
 
                     val intent = Intent(context, CameraActivity::class.java)
                     User.getUser().username = username_list[index]

@@ -18,12 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name="com.example.bloodpressuremonitoring.user.MainActivity" android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".user.MainActivity" android:screenOrientation="portrait"/>
         <activity android:name=".ResultActivity" android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -34,7 +29,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".classify.CameraActivity" />
         </activity>
-        <activity android:name=".classify.CameraActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".classify.CameraActivity" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".Rss.RssActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

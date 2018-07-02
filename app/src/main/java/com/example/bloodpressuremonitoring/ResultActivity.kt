@@ -9,12 +9,13 @@ import android.view.Menu
 import android.view.MenuItem
 import com.example.bloodpressuremonitoring.classify.CameraActivity
 import com.example.bloodpressuremonitoring.classify.CameraUtil
-import com.example.bloodpressuremonitoring.user.MainActivity
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_result.*
 
 class ResultActivity : AppCompatActivity() {
     lateinit var dataReference: DatabaseReference
+    lateinit var session: SessionManager
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         getMenuInflater().inflate(R.menu.menu_add, menu)
@@ -28,8 +29,9 @@ class ResultActivity : AppCompatActivity() {
             }
             R.id.action_logout -> {
                 finish()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                session!!.logoutUser()
+//                val intent = Intent(this, MainActivity::class.java)
+//                startActivity(intent)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -43,6 +45,8 @@ class ResultActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(false)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        session = SessionManager(applicationContext)
 
         var bitmap = BitmapFactory.decodeByteArray(CameraUtil.bytedata, 0, CameraUtil.bytedata.size)
         imageView3.setImageBitmap(bitmap)
