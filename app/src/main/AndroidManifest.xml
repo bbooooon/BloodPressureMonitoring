@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bloodpressuremonitoring">
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -18,20 +19,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".user.MainActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ResultActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".user.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ResultActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".classify.CameraActivity" />
         </activity>
-        <activity android:name=".classify.PreviewActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".classify.PreviewActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".classify.CameraActivity" />
         </activity>
-        <activity android:name=".classify.CameraActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".classify.CameraActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -39,6 +49,12 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".classify.CameraActivity" />
+        </activity>
+        <activity android:name=".classify.SubmitActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".classify.PreviewActivity" />
         </activity>
     </application>
 

@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_signin.*
 class SigninFragment : Fragment() {
     private var username_list: MutableList<String> = mutableListOf()
     private var password_list: MutableList<String> = mutableListOf()
-    private var email_list: MutableList<String> = mutableListOf()
+    private var hn_list: MutableList<String> = mutableListOf()
     lateinit var  mAuth: FirebaseAuth
     lateinit var dataReference: DatabaseReference
     lateinit var msgList: MutableList<AddUser>
@@ -41,13 +41,12 @@ class SigninFragment : Fragment() {
                     msgList.clear()
                     username_list.clear()
                     password_list.clear()
-                    email_list.clear()
                     for (i in p0.children) {
                         val message = i.getValue(AddUser::class.java)
                         msgList.add(message!!)
                         username_list.add(message.username)
                         password_list.add(message.password)
-                        email_list.add(message.email)
+                        hn_list.add(message.hn)
                     }
                 }
             }
@@ -62,8 +61,7 @@ class SigninFragment : Fragment() {
                     activity.finish()
 
                     val user: String = username_list[userindex]
-                    val email: String = email_list[userindex]
-                    Log.e("email ------>  ",email_list[userindex] )
+                    val hn = hn_list[index]
                     Log.e("password ------>  ",password_list[userindex] )
                     Log.e("Username ------>  ",username_list[userindex] )
 //                    mAuth = FirebaseAuth.getInstance()
@@ -79,7 +77,7 @@ class SigninFragment : Fragment() {
 //                        }
 //                    })
                     session = SessionManager(context)
-                    session!!.createLoginSession(user, email)
+                    session.createLoginSession(user, hn)
 
                     val intent = Intent(context, CameraActivity::class.java)
                     User.getUser().username = username_list[index]

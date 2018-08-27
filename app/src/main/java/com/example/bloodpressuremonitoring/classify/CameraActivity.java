@@ -1,26 +1,35 @@
 package com.example.bloodpressuremonitoring.classify;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.MediaActionSound;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TextureView;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.example.bloodpressuremonitoring.R;
 import com.example.bloodpressuremonitoring.Rss.RssActivity;
 import com.example.bloodpressuremonitoring.SessionManager;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 
 public class CameraActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener {
@@ -68,28 +77,36 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         session.checkLogin();
         HashMap<String, String> user = session.getUserDetails();
         String name = user.get(SessionManager.KEY_NAME);
-        String email = user.get(SessionManager.KEY_EMAIL);
 
         buttonCapture = findViewById(R.id.capture_btn);
         textureViewCamera = findViewById(R.id.textureView);
 
+        int toolbarheight = camera_toolbar.getHeight();
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
+
+
         int width = size.x/3;
         int height = width/3*4;
 
-        int left = size.x*60/100;
-        int top = size.y*15/100;
-        int right = size.x*5/100;
-        int bottom = size.y*38/100;
+        int left =size.x/2 - width/2;
+        int top = 0;
+        int right = size.x/2 - width/2;
+        int bottom = size.y/2 + height/2;
 
         ImageView cropArea = findViewById(R.id.crop_imageView);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
+
         params.setMargins(left, top, right, bottom);
         cropArea.setLayoutParams(params);
 //        cropArea.setMaxHeight(height);
 //        cropArea.setMaxWidth(width);
+
+        TextureView textureView = findViewById(R.id.textureView);
+        LinearLayout.LayoutParams parammaters = new LinearLayout.LayoutParams(size.x, size.y);
+//        params.setMargins(0, toolbarheight, 0, 0);
+//        cropArea.setLayoutParams(params);
 
 //        buttonRss.setOnClickListener(view -> openRss());
         buttonCapture.setOnClickListener(view -> takePicture());
@@ -101,6 +118,7 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
     protected void onStart() {
         super.onStart();
         if (textureViewCamera.isAvailable()) {
+//            setupCamera(textureViewCamera.getWidth(), textureViewCamera.getHeight());
             setupCamera(textureViewCamera.getWidth(), textureViewCamera.getHeight());
             startCameraPreview(textureViewCamera.getSurfaceTexture());
         }
@@ -148,7 +166,9 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         Camera.Parameters parameters = camera.getParameters();
         parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 //        parameters.set("iso", 500);
-        Camera.Size bestPictureSize = CameraUtil.getBestPictureSize(parameters.getSupportedPictureSizes());
+//        Camera.Size bestPictureSize = CameraUtil.getBestPictureSize(parameters.getSupportedPictureSizes());
+
+        Camera.Size bestPictureSize = CameraUtil.getOptimalPreviewSize(parameters.getSupportedPictureSizes(),width,height);
         parameters.setPictureSize(bestPictureSize.width, bestPictureSize.height);
         if (CameraUtil.isContinuousFocusModeSupported(parameters.getSupportedFocusModes())) {
             parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
@@ -173,6 +193,14 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         } catch (Exception e) {
             Log.e(TAG, "Error stop camera preview: " + e.getMessage());
         }
+    }
+
+    public Bitmap screenShot(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
+                view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
     }
 
     private void takePicture() {

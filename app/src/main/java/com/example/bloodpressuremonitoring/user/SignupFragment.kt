@@ -16,7 +16,6 @@ import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_signup.*
 
 class SignupFragment : Fragment() {
-    private var email: String = ""
     private var username: String = ""
     private var id: String = ""
     private var password: String = ""
@@ -32,17 +31,16 @@ class SignupFragment : Fragment() {
         val signup_submit = view.findViewById<Button>(R.id.signup_submit_btn)
 
         signup_submit.setOnClickListener{
-            email = email_input.text.toString()
             username = user_input.text.toString()
             id = id_input.text.toString()
             password = pass_input.text.toString()
             confirm_pass = conpass_input.text.toString()
 
+            if (id == "") {
+                Toast.makeText(context, "Input HN number", Toast.LENGTH_SHORT).show()
+            }
             if (username == "") {
                 Toast.makeText(context, "Input username", Toast.LENGTH_SHORT).show()
-            }
-            if (email == "" || !email.contains("@")) {
-                Toast.makeText(context, "Input email", Toast.LENGTH_SHORT).show()
             }
             if (password == "") {
                 Toast.makeText(context, "Input password", Toast.LENGTH_SHORT).show()
@@ -50,7 +48,7 @@ class SignupFragment : Fragment() {
             if (confirm_pass == "") {
                 Toast.makeText(context, "Input password", Toast.LENGTH_SHORT).show()
             }
-            if (username.isNotEmpty() && password.isNotEmpty() && email.isNotEmpty() && confirm_pass.isNotEmpty()) {
+            if (username.isNotEmpty() && password.isNotEmpty() && confirm_pass.isNotEmpty()) {
                 if (username in username_list) {
                     Toast.makeText(context, "Please change username.", Toast.LENGTH_SHORT).show()
                 }
@@ -59,6 +57,9 @@ class SignupFragment : Fragment() {
                 }
                 else if (password.length < 6) {
                     Toast.makeText(context, "Password is too short.", Toast.LENGTH_SHORT).show()
+                }
+                else if (id.length < 8) {
+                    Toast.makeText(context, "HN number must contain 8 digits.", Toast.LENGTH_SHORT).show()
                 }
                 else {
                     saveData()
@@ -91,20 +92,20 @@ class SignupFragment : Fragment() {
 
     private fun saveData() {
         val messageId = dataReference.push().key
-        val journalEntry1 = AddUser(username, id, password, email)
+        val journalEntry1 = AddUser(username, id, password)
         dataReference.child(messageId).setValue(journalEntry1).addOnCompleteListener {
             Toast.makeText(context, "Registration Success", Toast.LENGTH_SHORT).show()
         }
 
-        mAuth = FirebaseAuth.getInstance()
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this.activity, OnCompleteListener<AuthResult> { task ->
-                    if (!task.isSuccessful()) {
-                        Toast.makeText(context, "Authentication failed." + task.getException(),Toast.LENGTH_SHORT).show();
-                    } else {
-                        val intent = Intent(this.context, MainActivity::class.java)
-                        startActivity(intent)
-                    }
-                })
+//        mAuth = FirebaseAuth.getInstance()
+//        mAuth.createUserWithEmailAndPassword(email, password)
+//                .addOnCompleteListener(this.activity, OnCompleteListener<AuthResult> { task ->
+//                    if (!task.isSuccessful()) {
+//                        Toast.makeText(context, "Authentication failed." + task.getException(),Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        val intent = Intent(this.context, MainActivity::class.java)
+//                        startActivity(intent)
+//                    }
+//                })
     }
 }

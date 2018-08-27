@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MotionEvent
@@ -12,7 +13,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import com.example.bloodpressuremonitoring.R
 import kotlinx.android.synthetic.main.activity_main.*
-
+import android.support.v4.app.ActivityCompat
+import android.content.DialogInterface
+import android.support.v4.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 123
@@ -58,22 +61,52 @@ class MainActivity : AppCompatActivity() {
                 var message = "You need to grant access to " + permissionsNeeded[0]
                 for (i in 1 until permissionsNeeded.size)
                     message = message + ", " + permissionsNeeded[i]
-                requestPermissions(permissionsList.toTypedArray(),
-                                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(permissionsList.toTypedArray(),
+                                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS)
+                }
                 return
             }
-            requestPermissions(permissionsList.toTypedArray(),
-                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(permissionsList.toTypedArray(),
+
+         REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS)
+            }
             return
         }
     }
-
     private fun addPermission(permissionsList: MutableList<String>, permission: String): Boolean {
-        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            permissionsList.add(permission)
-            if (!shouldShowRequestPermissionRationale(permission))
-                return false
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionsList.add(permission)
+                if (!shouldShowRequestPermissionRationale(permission))
+                    return false
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.CAMERA)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                                Manifest.permission.CAMERA)) {
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            arrayOf(Manifest.permission.CAMERA),
+                            REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS)
+                }
+            }
+            if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                            REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS)
+                }
+            }
         }
+
         return true
     }
 

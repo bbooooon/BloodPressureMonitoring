@@ -56,7 +56,8 @@
             android:layout_gravity="center"
             android:background="@drawable/round_button"
             android:text="เข้าสู่ระบบ"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
     </LinearLayout>
 
 </FrameLayout>

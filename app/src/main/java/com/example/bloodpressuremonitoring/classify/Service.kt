@@ -12,5 +12,5 @@ import retrofit2.http.Part
 interface Service{
     @Multipart
     @POST("/predict")
-    fun postImage(@Part file: MultipartBody.Part): Call<Prediction>
+    fun postImage(@Part file: MultipartBody.Part, @Part hn: MultipartBody.Part, @Part username: MultipartBody.Part, @Part timestamp: MultipartBody.Part): Call<Prediction>
 }
