@@ -1,5 +1,5 @@
 package com.example.bloodpressuremonitoring.user
 
-class UserProfile (var username: String, var hnnum:String) {
+class UserProfile (var email: String, var hnnum:String) {
     constructor() : this("","")
 }

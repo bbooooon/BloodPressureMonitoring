@@ -6,8 +6,9 @@
     <color name="light_yellow">#ffcf62</color>
     <color name="light_orange">#fdb016</color>
     <color name="lightblue">#daebea</color>
-    <color name="toolbarblue">#5677fc</color>
+    <color name="toolbarblue">#2f385e</color>
     <color name="fragmentblue">#c5e0de</color>
     <color name="resultblue">#c5e0de</color>
     <color name="resultheadblue">#578582</color>
+    <color name="im_blue">#86a4a2</color>
 </resources>

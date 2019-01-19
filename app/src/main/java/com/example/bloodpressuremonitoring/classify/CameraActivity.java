@@ -7,14 +7,13 @@ import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.MediaActionSound;
-import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TextureView;
@@ -22,24 +21,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
 import com.example.bloodpressuremonitoring.R;
 import com.example.bloodpressuremonitoring.Rss.RssActivity;
 import com.example.bloodpressuremonitoring.SessionManager;
-
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class CameraActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener {
     private static final String TAG = CameraActivity.class.getSimpleName();
     private int cameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
     private Button buttonCapture;
+    private Button buttonFlash;
     private Button buttonRss;
     private TextureView textureViewCamera;
     private Camera camera;
     SessionManager session;
+    private boolean isLighOn = false;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -48,10 +48,16 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
     }
 
     @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_help:
-                break;
+//            case R.id.action_help:
+//                break;
             case R.id.action_logout:
                 finish();
                 session.logoutUser();
@@ -71,21 +77,29 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         setContentView(R.layout.activity_camera);
         Toolbar camera_toolbar = findViewById(R.id.camera_toolbar);
         setSupportActionBar(camera_toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        camera_toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
         HashMap<String, String> user = session.getUserDetails();
-        String name = user.get(SessionManager.KEY_NAME);
+        String name = user.get(SessionManager.KEY_EMAIL);
 
         buttonCapture = findViewById(R.id.capture_btn);
+        buttonFlash = findViewById(R.id.flash_btn);
         textureViewCamera = findViewById(R.id.textureView);
 
         int toolbarheight = camera_toolbar.getHeight();
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-
 
         int width = size.x/3;
         int height = width/3*4;
@@ -103,25 +117,41 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
 //        cropArea.setMaxHeight(height);
 //        cropArea.setMaxWidth(width);
 
-        TextureView textureView = findViewById(R.id.textureView);
-        LinearLayout.LayoutParams parammaters = new LinearLayout.LayoutParams(size.x, size.y);
-//        params.setMargins(0, toolbarheight, 0, 0);
-//        cropArea.setLayoutParams(params);
+        TextureView textureview = findViewById(R.id.textureView);
+        ConstraintLayout.LayoutParams parammaters = new ConstraintLayout.LayoutParams(size.x, size.y);
+        parammaters.setMargins(0, 55, 0, 0);
+        textureview.setLayoutParams(parammaters);
 
 //        buttonRss.setOnClickListener(view -> openRss());
-        buttonCapture.setOnClickListener(view -> takePicture());
+        buttonCapture.setOnClickListener(view ->takePicture()
+        );
         textureViewCamera.setSurfaceTextureListener(this);
         textureViewCamera.setOnClickListener(view -> refocus());
+
+        buttonFlash.setVisibility(View.GONE);
+//        buttonFlash.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (isLighOn) {
+//                    buttonFlash.setBackgroundResource(R.drawable.flashlight_off);
+//                    isLighOn = false;
+//                }
+//                else {
+//                    buttonFlash.setBackgroundResource(R.drawable.flashlight_on);
+//                    isLighOn = true;
+//                }
+//            }
+//        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (textureViewCamera.isAvailable()) {
-//            setupCamera(textureViewCamera.getWidth(), textureViewCamera.getHeight());
             setupCamera(textureViewCamera.getWidth(), textureViewCamera.getHeight());
             startCameraPreview(textureViewCamera.getSurfaceTexture());
         }
+
     }
 
     @Override
@@ -162,10 +192,15 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
     }
 
     private void setupCamera(int width, int height) {
-        camera = CameraUtil.openCamera(cameraId);
+        camera = CameraUtil.openDefaultCamera();
         Camera.Parameters parameters = camera.getParameters();
-        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-//        parameters.set("iso", 500);
+//        if (isLighOn) {
+//            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+//        }
+//        else {
+//            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+//        }
+//        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 //        Camera.Size bestPictureSize = CameraUtil.getBestPictureSize(parameters.getSupportedPictureSizes());
 
         Camera.Size bestPictureSize = CameraUtil.getOptimalPreviewSize(parameters.getSupportedPictureSizes(),width,height);
@@ -195,12 +230,17 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         }
     }
 
-    public Bitmap screenShot(View view) {
+    public void screenShot(View view) {
         Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
                 view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         view.draw(canvas);
-        return bitmap;
+        ByteArrayOutputStream stream2 = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream2);
+        byte[] bytearr1 = stream2.toByteArray();
+        CameraUtil.bytedata = bytearr1;
+        Intent intent = new Intent(this, PreviewActivity.class);
+        startActivity(intent);
     }
 
     private void takePicture() {
@@ -209,6 +249,7 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
             null,
             (img_data, camera) -> {
                 CameraUtil.setData(img_data);
+                finish();
                 Intent intent = new Intent(this, PreviewActivity.class);
                 startActivity(intent);
             });

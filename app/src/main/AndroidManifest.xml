@@ -12,10 +12,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/applogo"
-        android:label="BPM"
+        android:label="BPM2"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -39,23 +43,67 @@
         <activity
             android:name=".classify.CameraActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomeActivity" />
         </activity>
         <activity android:name=".Rss.RssActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".classify.CameraActivity" />
         </activity>
-        <activity android:name=".classify.SubmitActivity"
+        <activity
+            android:name=".classify.SubmitActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".classify.PreviewActivity" />
         </activity>
+        <activity
+            android:name=".History.HistoryActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomeActivity" />
+        </activity>
+        <activity
+            android:name=".HomeActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".History.DetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomeActivity" />
+        </activity>
+        <activity android:name=".help.HelpActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.bloodpressuremonitoring.HomeActivity" />
+        </activity>
+
+        <!-- <receiver -->
+        <!-- android:name=".History.TimerExpiredReceiver" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="false" /> -->
+        <!-- <receiver -->
+        <!-- android:name=".History.TimerNotificationActionReceiver" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="false"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="stop" /> -->
+        <!-- <action android:name="pause" /> -->
+        <!-- <action android:name="resume" /> -->
+        <!-- <action android:name="start" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+
+        <activity android:name=".History.AccessActivity" />
+        <activity android:name=".History.AdminActivity"></activity>
     </application>
 
 </manifest>

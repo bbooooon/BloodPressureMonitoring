@@ -1,6 +1,5 @@
 package com.example.bloodpressuremonitoring.classify
 
-import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.*
 import android.support.v7.app.AppCompatActivity
@@ -16,12 +15,10 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.example.bloodpressuremonitoring.R
 import com.example.bloodpressuremonitoring.SessionManager
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_preview.*
 import java.io.ByteArrayOutputStream
 import android.graphics.Bitmap
-
 
 class PreviewActivity : AppCompatActivity() {
     private var fpath:String? = null
@@ -41,9 +38,9 @@ class PreviewActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.getItemId()) {
-            R.id.action_help -> {
-                return true
-            }
+//            R.id.action_help -> {
+//                return true
+//            }
             R.id.action_logout -> {
                 finish()
                 session.logoutUser()
@@ -73,44 +70,74 @@ class PreviewActivity : AppCompatActivity() {
         val display = windowManager.defaultDisplay
         val size = Point()
         display.getSize(size)
+
+        val displayratio :Double = ((size.y.toDouble()/size.x.toDouble())*10)
+        Log.e("display ratio ::: ", displayratio.toString())
+
         val ratiow:Double = bitmap.width.toDouble()/size.x.toDouble()
         val ratioh:Double = bitmap.height.toDouble()/size.y.toDouble()
-        val width = size.x/3*ratiow
-        val height = width / 3 * 4
+
+        Log.e("display ratio w,h : ", ratiow.toString()+" , "+ratioh.toString())
+
         Log.e("display size", size.x.toString() + " x " + size.y)
-        Log.e("display size", (bitmap.width).toString() + " x " + (bitmap.height))
+        Log.e("bitmap size", (bitmap.width).toString() + " x " + (bitmap.height))
 
-        val bitmapwidth = size.x*ratiow
-        val bitmapheight = size.y*ratioh
+//@todo trim image side to fit screen
+        var bitmapwidth :Double? = null
+        var bitmapheight :Double? = null
+        if (displayratio.toInt() in 12..14){
+            Log.e("decision ", "enter 1")
+            bitmapwidth = size.x*ratiow
+            bitmapheight = size.y*ratioh
+        }
+        else if (displayratio.toInt() in 16..18){
+            Log.e("decision ", "enter 2")
+            bitmapwidth = size.x*ratiow//*0.85//*0.90
+            bitmapheight = size.y*ratioh
+        }
+        else if (displayratio.toInt() in 19..21){
+            Log.e("decision ", "enter 3")
+            bitmapwidth = size.x*ratiow*0.67
+            bitmapheight = size.y*ratioh
+        }
+        else{
+            Log.e("decision ", "enter 4")
+            bitmapwidth = size.x*ratiow
+            bitmapheight = size.y*ratioh
+        }
 
-        val sidew = (bitmap.width - bitmapwidth)/2
-        val sideh = (bitmap.height - bitmapheight)/2
-//        val x:Int = 0
-//        val y:Int = 0
-        val x:Int = ((bitmap.width / 2) - (width / 2)).toInt()
+        val sidew = (bitmap.width - bitmapwidth!!)/2
+        val sideh = (bitmap.height - bitmapheight!!)/2
+
+        val ratio:Double = bitmapwidth!!.toDouble()/size.x.toDouble()
+//        val ratio:Double = bitmap.width!!.toDouble()/size.x.toDouble()
+        val width = size.x/3 * ratio
+        val height = width / 3 * 4
+
+//        Log.e("display side origin", sideh.toString() + " x " + sidew.toString())
+
+        var cropside = Bitmap.createBitmap(bitmap, sidew.toInt(),sideh.toInt(),(bitmapwidth!!).toInt(), (bitmapheight!!-sideh).toInt())
+//        var cropside = Bitmap.createBitmap(bitmap, 0,0,(bitmap.width!!).toInt(), bitmap.height!!.toInt())
+
+//        //@todo remove when test done
+//        val stream1 = ByteArrayOutputStream()
+//        cropside.compress(Bitmap.CompressFormat.PNG, 100, stream1)
+//        val bytearr = stream1.toByteArray()
+//        CameraUtil.bytedata = bytearr
+//        val file2 = CameraUtil.savePicture("test2_");
+//        val orientation2 = CameraUtil.getCameraDisplayOrientation(this, cameraId)
+//        CameraUtil.setImageOrientation(file2, orientation2)
+//        CameraUtil.updateMediaScanner(this, file2)
+//        fpath = file2.absolutePath
+
+        val x:Int = ((bitmapwidth!! / 2) - (width / 2)).toInt()
+//        val x:Int = ((bitmap.width!! / 2) - (width / 2)).toInt()
         val y:Int = 0
-        val file = CameraUtil.savePicture("test1_")
-        val orientation = CameraUtil.getCameraDisplayOrientation(this, cameraId)
-        CameraUtil.setImageOrientation(file, orientation)
-        CameraUtil.updateMediaScanner(this, file)
-        fpath = file.absolutePath
+        var resize = Bitmap.createBitmap(cropside, x, y,width.toInt(), height.toInt())
+        resize = Bitmap.createScaledBitmap(resize, (resize.width*0.7).toInt(), (resize.height*0.7).toInt(), false)
+//        resize = lightenBitMap(resize)
 
-        Log.e("display size", x.toString() + " x " + y)
-        var cropside = Bitmap.createBitmap(bitmap, sidew.toInt(), sideh.toInt(),(bitmapwidth).toInt(), (bitmapheight).toInt())
-        val stream1 = ByteArrayOutputStream()
-        cropside.compress(Bitmap.CompressFormat.PNG, 100, stream1)
-        val bytearr = stream1.toByteArray()
-        CameraUtil.bytedata = bytearr
-        val file2 = CameraUtil.savePicture("test2_");
-        val orientation2 = CameraUtil.getCameraDisplayOrientation(this, cameraId)
-        CameraUtil.setImageOrientation(file2, orientation2)
-        CameraUtil.updateMediaScanner(this, file2)
-        fpath = file2.absolutePath
-
-        var resize = Bitmap.createBitmap(cropside, x, y,(width).toInt(), (height).toInt())
-        resize = Bitmap.createScaledBitmap(resize, (resize.width*0.5).toInt(), (resize.height*0.5).toInt(), false)
-        resize = lightenBitMap(resize)
-
+        //@todo remove when test done
         val stream2 = ByteArrayOutputStream()
         resize.compress(Bitmap.CompressFormat.PNG, 100, stream2)
         val bytearr1 = stream2.toByteArray()
@@ -122,7 +149,6 @@ class PreviewActivity : AppCompatActivity() {
         fpath = file3.absolutePath
 
         preview_imageView.setImageBitmap(resize)
-
 
         Log.e("resize resolution", resize.width.toString()+"x"+resize.height)
         val stream = ByteArrayOutputStream()
@@ -162,8 +188,6 @@ class PreviewActivity : AppCompatActivity() {
 
         preview_backbtn.setOnClickListener {
             finish()
-            val intent = Intent(this, CameraActivity::class.java)
-            startActivity(intent)
         }
 
         preview_submitbtn.setOnClickListener {
@@ -177,12 +201,7 @@ class PreviewActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "กรุณาเลือกแขนข้างที่วัด", Toast.LENGTH_LONG).show()
             }
             else if(loc_position != 0 && pos_position != 0 && arm_position != 0){
-                val file = CameraUtil.savePicture("img_");
-                val orientation = CameraUtil.getCameraDisplayOrientation(this, cameraId)
-                CameraUtil.setImageOrientation(file, orientation)
-                CameraUtil.updateMediaScanner(this, file)
-                fpath = file.absolutePath
-
+                finish()
                 val intent = Intent(this@PreviewActivity, SubmitActivity::class.java)
                 intent.putExtra("location",loc_position)
                 intent.putExtra("posture",pos_position)
@@ -236,7 +255,7 @@ class PreviewActivity : AppCompatActivity() {
         if (fpath!=null){
             val storage = FirebaseStorage.getInstance()
             val storageReference = storage!!.reference
-            val imageRef = storageReference!!.child("pills/"+CameraUtil.filename)//send to firebase folder
+            val imageRef = storageReference!!.child("file/"+CameraUtil.filename)//send to firebase folder
 
             imageRef.putBytes(CameraUtil.bytedata)
                     .addOnCompleteListener{

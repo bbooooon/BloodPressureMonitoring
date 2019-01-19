@@ -1,5 +1,6 @@
 package com.example.bloodpressuremonitoring.user
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -9,18 +10,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import com.example.bloodpressuremonitoring.HomeActivity
 import com.example.bloodpressuremonitoring.R
 import com.example.bloodpressuremonitoring.SessionManager
-import com.example.bloodpressuremonitoring.classify.CameraActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_signin.*
 
 class SigninFragment : Fragment() {
-    private var username_list: MutableList<String> = mutableListOf()
+    private var email_list: MutableList<String> = mutableListOf()
+    private var name_list: MutableList<String> = mutableListOf()
     private var password_list: MutableList<String> = mutableListOf()
+    private var admin_list: MutableList<Int> = mutableListOf()
     private var hn_list: MutableList<String> = mutableListOf()
-    lateinit var  mAuth: FirebaseAuth
+    lateinit var mAuth: FirebaseAuth
     lateinit var dataReference: DatabaseReference
     lateinit var msgList: MutableList<AddUser>
     lateinit var session: SessionManager
@@ -39,58 +42,59 @@ class SigninFragment : Fragment() {
             override fun onDataChange(p0: DataSnapshot?) {
                 if (p0!!.exists()) {
                     msgList.clear()
-                    username_list.clear()
+                    email_list.clear()
                     password_list.clear()
                     for (i in p0.children) {
                         val message = i.getValue(AddUser::class.java)
                         msgList.add(message!!)
-                        username_list.add(message.username)
+                        email_list.add(message.email)
                         password_list.add(message.password)
+                        name_list.add(message.name)
                         hn_list.add(message.hn)
+                        admin_list.add(message.admin)
                     }
                 }
             }
         })
 
         signin_submit.setOnClickListener {
-            val username: String = signin_user_input.text.toString()
+            val email: String = signin_email_input.text.toString()
             val password: String = signin_pass_input.text.toString()
-            val userindex = username_list.indexOf(username)
-            for ((index, value) in username_list.withIndex()) {
-                if (username in username_list[index] && password.equals(password_list[index])) {
+
+            val userindex = email_list.indexOf(email)
+            for ((index, value) in email_list.withIndex()) {
+                if (email in email_list[index] && password.equals(password_list[index])) {
                     activity.finish()
 
-                    val user: String = username_list[userindex]
+                    val em: String = email_list[userindex]
+                    val n: String = name_list[userindex]
                     val hn = hn_list[index]
-                    Log.e("password ------>  ",password_list[userindex] )
-                    Log.e("Username ------>  ",username_list[userindex] )
-//                    mAuth = FirebaseAuth.getInstance()
-//                    mAuth.signInWithEmailAndPassword(email_list[userindex], password).addOnCompleteListener(this.activity, OnCompleteListener<AuthResult> { task ->
-//                        if (!task.isSuccessful()) {
-//                            Log.w(TAG, "signInWithEmail", task.getException());
-//                            Toast.makeText(this.context, "Authentication failed.", Toast.LENGTH_SHORT).show();
-//                        }
-//                        else {
-//                            val intent = Intent(context, CameraActivity::class.java)
-////                            intent.putExtra("id", mAuth.currentUser?.email)
-//                            startActivity(intent)
-//                        }
-//                    })
-                    session = SessionManager(context)
-                    session.createLoginSession(user, hn)
 
-                    val intent = Intent(context, CameraActivity::class.java)
-                    User.getUser().username = username_list[index]
+                    session = SessionManager(context)
+                    session.createLoginSession(n, em, hn)
+
+                    mAuth = FirebaseAuth.getInstance()
+                    mAuth.signInWithEmailAndPassword(email_list[userindex], password).addOnCompleteListener(this.activity) { task ->
+                        if (!task.isSuccessful) {
+                            Log.w(TAG, "signInWithEmail", task.getException());
+                            Toast.makeText(this.context, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    User.getUser().email = email_list[index]
+                    val intent = Intent(context, HomeActivity::class.java)
                     startActivity(intent)
+//                    val intent = Intent(context, HomeActivity::class.java)
+//                    startActivity(intent)
                 }
-                if (username in username_list[index] && password != password_list[index]) {
+                if (email in email_list[index] && password != password_list[index]) {
                     Toast.makeText(context, "failed", Toast.LENGTH_SHORT).show()
                 }
             }
-            if (username !in username_list || password !in password_list) {
+            if (email !in email_list || password !in password_list) {
                 Toast.makeText(context, "failed", Toast.LENGTH_SHORT).show()
             }
-            if (username in username_list && password !in password_list) {
+            if (email in email_list && password !in password_list) {
                 Toast.makeText(context, "failed", Toast.LENGTH_SHORT).show()
             }
         }

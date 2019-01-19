@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.pillclassificationkeras.classify.CameraActivity">
 
-    <item
-        android:id="@+id/action_help"
-        android:icon="@android:drawable/ic_menu_help"
-        android:title="Help"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_help"-->
+        <!--android:icon="@android:drawable/ic_menu_help"-->
+        <!--android:title="Help"-->
+        <!--app:showAsAction="never" />-->
 
     <item
         android:id="@+id/action_logout"

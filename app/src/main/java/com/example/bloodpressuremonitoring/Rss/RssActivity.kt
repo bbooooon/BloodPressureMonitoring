@@ -19,9 +19,9 @@ class RssActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.getItemId()) {
-            R.id.action_help -> {
-                return true
-            }
+//            R.id.action_help -> {
+//                return true
+//            }
             R.id.action_logout -> {
                 finish()
                 val intent = Intent(this, MainActivity::class.java)

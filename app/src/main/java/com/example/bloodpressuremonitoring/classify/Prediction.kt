@@ -2,18 +2,20 @@ package com.example.bloodpressuremonitoring.classify
 
 import com.google.gson.annotations.SerializedName
 
-class Prediction(msg: PredictionResult, result: Int) {
+class Prediction(msg: PredictionResult, result: Boolean, err: String) {
     @SerializedName("prediction")
     var msg:PredictionResult = msg
-    @SerializedName("result")
-    var result:Int = result
+    @SerializedName("success")
+    var result:Boolean = result
+    @SerializedName("error_message")
+    var err:String = err
 }
 
-class PredictionResult(dia: Int, sys: Int, pulse:Int) {
+class PredictionResult(dia: Double, sys: Double, pulse:Double) {
     @SerializedName("diastolic")
-    var dia: Int = dia
+    var dia: Double = dia
     @SerializedName("systolic")
-    var sys: Int = sys
+    var sys: Double = sys
     @SerializedName("heart_rate")
-    var pulse: Int = pulse
+    var pulse: Double = pulse
 }

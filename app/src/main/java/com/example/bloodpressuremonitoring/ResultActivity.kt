@@ -24,9 +24,9 @@ class ResultActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.getItemId()) {
-            R.id.action_help -> {
-                return true
-            }
+//            R.id.action_help -> {
+//                return true
+//            }
             R.id.action_logout -> {
                 finish()
                 session!!.logoutUser()
@@ -74,8 +74,6 @@ class ResultActivity : AppCompatActivity() {
 
         result_btn.setOnClickListener {
             finish()
-            val intent = Intent(this, CameraActivity::class.java)
-            startActivity(intent)
         }
     }
 

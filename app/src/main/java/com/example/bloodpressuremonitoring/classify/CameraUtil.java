@@ -168,8 +168,17 @@ public class CameraUtil {
         SimpleDateFormat dateformat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         filename = title+dateformat.format(date)+".jpg";
         takentime = dateformat.format(date);
-        String filePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        File file = new File(filePath + "/" + filename);
+
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "BPM");
+
+        if (!mediaStorageDir.exists()){
+            if (!mediaStorageDir.mkdirs()){
+                return null;
+            }
+        }
+        File file = new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_"+ filename + ".jpg");
         try {
             if (file.exists()) {
                 file.delete();

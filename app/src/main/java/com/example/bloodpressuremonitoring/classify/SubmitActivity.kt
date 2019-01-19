@@ -14,8 +14,10 @@ import android.widget.Toast
 import com.example.bloodpressuremonitoring.R
 import com.example.bloodpressuremonitoring.ResultActivity
 import com.example.bloodpressuremonitoring.SessionManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_submit.*
 import okhttp3.MediaType
@@ -31,9 +33,10 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class SubmitActivity : AppCompatActivity() {
-    private var result:Int? = null
+    private var result:Boolean? = null
     private var prediction:PredictionResult? = null
     private var loc_position: Int? = null
     private var pos_position: Int? = null
@@ -54,14 +57,13 @@ class SubmitActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item!!.getItemId()) {
-            R.id.action_help -> {
-                return true
-            }
+//            R.id.action_help -> {
+//                return true
+//            }
             R.id.action_logout -> {
+                FirebaseAuth.getInstance().signOut()
                 finish()
                 session.logoutUser()
-//                val intent = Intent(this, MainActivity::class.java)
-//                startActivity(intent)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)
@@ -107,72 +109,89 @@ class SubmitActivity : AppCompatActivity() {
     }
 
     private fun callRetrofit(){
-        loadingDialog = ProgressDialog.show(this, "Identifying", "Please wait...", true, false)
+        loadingDialog = ProgressDialog.show(this, "กำลังอ่านค่าตัวเลข", "กรุณารอสักครู่...", true, false)
         val gson = GsonBuilder()
                 .setLenient()
                 .create()
         val client = OkHttpClient.Builder()
-        client.addInterceptor{ chain ->
-            val req = chain.request()
-            val requestBuilder = req.newBuilder().method(req.method(),req.body())
-            val request = requestBuilder.build()
-            chain.proceed(request)
-        }
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .build()
+//        }
 
         val retrofit = Retrofit.Builder()
 //                .baseUrl("http://35.198.247.234/")
-                .baseUrl("http://103.76.181.221:3000/")
+//                .baseUrl("http://103.76.181.221:3000/")
+
+                .baseUrl("http://178.128.76.142:80/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(ScalarsConverterFactory.create())
+                .client(client)
                 .build()
 
         val file = File(fpath)
 
         val usersess = session.userDetails
-        val name = usersess[SessionManager.KEY_NAME]
+        val name = usersess[SessionManager.KEY_EMAIL]
         val hn = usersess[SessionManager.KEY_HN]
 
         val date = Date()
         val dateformat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")
 
         Log.e("hn :: ",hn)
+//        val reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
+//        val body1 = MultipartBody.Part.createFormData("image", file.getName(), reqFile)
+//        val body2 = MultipartBody.Part.createFormData("hn", hn.toString())
+//        val body3 = MultipartBody.Part.createFormData("username", name)
+//        val body4 = MultipartBody.Part.createFormData("timestamp", dateformat.format(date))
+//        val service = retrofit.create(Service::class.java)
+//        val callservice: Call<Prediction> = service.postImage(body1,body2,body3,body4)
         val reqFile = RequestBody.create(MediaType.parse("multipart/form-data"), file)
         val body1 = MultipartBody.Part.createFormData("image", file.getName(), reqFile)
-        val body2 = MultipartBody.Part.createFormData("hn", hn.toString())
-        val body3 = MultipartBody.Part.createFormData("username", name)
-        val body4 = MultipartBody.Part.createFormData("timestamp", dateformat.format(date))
         val service = retrofit.create(Service::class.java)
-        val callservice: Call<Prediction> = service.postImage(body1,body2,body3,body4)
+        val callservice: Call<Prediction> = service.postImage(body1)
         callservice.enqueue(object : Callback<Prediction> {
             override fun onResponse(call: Call<Prediction>, response: Response<Prediction>) {
                 if(response.isSuccessful) {
                     loadingDialog.dismiss()
                     val pre = response.body()!!
                     result = pre.result
-                    prediction = pre.msg
-                    Log.e(" server result", result.toString())
-//                    Toast.makeText(applicationContext, result, Toast.LENGTH_LONG).show()
-                    if (prediction != null && result==1) {
-                        val date = Date()
-                        val dateformat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")
-                        dataReference = FirebaseDatabase.getInstance().getReference("UserData")
-                        val user = session.userDetails
-                        val name = user[SessionManager.KEY_NAME]
-                        val userData = UserData(prediction!!.dia.toString(), prediction!!.sys.toString(),
-                                prediction!!.pulse.toString(), loc_position.toString(), pos_position.toString(), arm_position.toString(),
-                                CameraUtil.takentime,dateformat.format(date).toString())
-                        dataReference.child(name).child(dateformat.format(date).toString()).setValue(userData).addOnCompleteListener {
-                            Toast.makeText(this@SubmitActivity, "Data Added", Toast.LENGTH_SHORT).show()
-                        }
+                    if(result!!){
+                        prediction = pre.msg
+    //                    Log.e(" server result", result.toString())
+    //                    Toast.makeText(applicationContext, result, Toast.LENGTH_LONG).show()
+                        if (prediction != null){// && result==1) {
+                            val date = Date()
+                            val dateformat = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss")
+                            uploadToStorage()
+                            dataReference = FirebaseDatabase.getInstance().getReference("UserData")
+                            val user = session.userDetails
+                            val aname = user[SessionManager.KEY_NAME]
+                            val parts = aname!!.split(" ")
+                            val name = parts[0]
 
-                        val intent = Intent(this@SubmitActivity, ResultActivity::class.java)
-                        intent.putExtra("dia", prediction!!.dia.toString())
-                        intent.putExtra("sys", prediction!!.sys.toString())
-                        intent.putExtra("pulse", prediction!!.pulse.toString())
-                        startActivity(intent)
+                            val userData = UserData(prediction!!.dia.toString(), prediction!!.sys.toString(),
+                                    prediction!!.pulse.toString(), loc_position.toString(), pos_position.toString(), arm_position.toString(),
+                                    CameraUtil.takentime,dateformat.format(date).toString())
+                            dataReference.child(hn).child(dateformat.format(date).toString()).setValue(userData).addOnCompleteListener {
+                                Toast.makeText(this@SubmitActivity, "บันทึกข้อมูลเรียบร้อย", Toast.LENGTH_SHORT).show()
+                            }
+                            finish()
+                            val intent = Intent(this@SubmitActivity, ResultActivity::class.java)
+                            Log.e("show dia",prediction!!.dia.toString())
+                            Log.e("show sys", prediction!!.sys.toString())
+                            Log.e("show pulse", prediction!!.pulse.toString())
+                            intent.putExtra("dia", prediction!!.dia.toInt().toString())
+                            intent.putExtra("sys", prediction!!.sys.toInt().toString())
+                            intent.putExtra("pulse", prediction!!.pulse.toInt().toString())
+                            startActivity(intent)
+                        }
                     }
-                    else if (result == 0) {
-                        Toast.makeText(applicationContext, "กรุณาถ่ายใหม่", Toast.LENGTH_LONG).show()
+                    else{
+                        val err = pre.err
+                        Toast.makeText(applicationContext, err, Toast.LENGTH_LONG).show()
+                        finish()
                     }
                 }
                 else{
@@ -180,8 +199,7 @@ class SubmitActivity : AppCompatActivity() {
                     Log.e("message", response.message().toString())
                     Log.e("response code", response.code().toString())
                     Log.e("header", response.headers().toString())
-                    val intent = Intent(this@SubmitActivity, CameraActivity::class.java)
-                    startActivity(intent)
+                    finish()
                 }
             }
 
@@ -191,5 +209,20 @@ class SubmitActivity : AppCompatActivity() {
                 finish()
             }
         })
+    }
+    private fun uploadToStorage(){
+        if (fpath!=null){
+            val storage = FirebaseStorage.getInstance()
+            val storageReference = storage!!.reference
+            val imageRef = storageReference!!.child("pic/"+CameraUtil.takentime+".jpg")//send to firebase folder
+
+            imageRef.putBytes(CameraUtil.bytedata)
+                    .addOnCompleteListener{
+
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this,"Storage Upload Failed",Toast.LENGTH_SHORT).show()
+                    }
+        }
     }
 }

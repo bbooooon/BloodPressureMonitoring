@@ -6,4 +6,5 @@ class UserData(val dia: String, val sys: String, val pulse: String, val location
 //    var pulse: String = pulse
 //    var location: String = location
 //    var posture: String = posture
+    constructor() : this("","","","","","","","")
 }
