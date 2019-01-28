@@ -33,7 +33,7 @@ class FourHelpFragment : Fragment() {
         display.getSize(size)
         val intendedWidth = size.x*80/100
 
-        val bd = this.resources.getDrawable(R.drawable.applogo) as BitmapDrawable
+        val bd = this.resources.getDrawable(R.drawable.help4_1) as BitmapDrawable
         val width: Double = bd.bitmap.width.toDouble()
         val height: Double = bd.bitmap.height.toDouble()
         val scale = intendedWidth / width

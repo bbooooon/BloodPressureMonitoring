@@ -38,21 +38,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:src="@drawable/bg_app_logo" />
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/help3_1" />
 
                 <ImageView
                     android:id="@+id/help3_2_imageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:src="@drawable/bg_app_logo" />
-
-                <ImageView
-                    android:id="@+id/help3_3_imageView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:src="@drawable/bg_app_logo" />
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/help3_2" />
 
                 <Button
                     android:id="@+id/help3_btn"
@@ -63,7 +58,7 @@
                     android:layout_marginEnd="40dp"
                     android:layout_marginBottom="50dp"
                     android:background="@drawable/round_button"
-                    android:text="ไปที่หน้าตั้งเตือนทานยา" />
+                    android:text="ไปที่หน้าประวัติความดัน" />
             </LinearLayout>
         </ScrollView>
     </android.support.constraint.ConstraintLayout>

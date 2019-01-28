@@ -210,6 +210,7 @@ class SubmitActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun uploadToStorage(){
         if (fpath!=null){
             val storage = FirebaseStorage.getInstance()

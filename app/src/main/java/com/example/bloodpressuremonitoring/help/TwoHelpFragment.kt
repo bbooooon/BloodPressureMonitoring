@@ -34,7 +34,7 @@ class TwoHelpFragment : Fragment() {
         display.getSize(size)
         val intendedWidth = size.x*80/100
 
-        val bd1 = this.resources.getDrawable(R.drawable.applogo) as BitmapDrawable
+        val bd1 = this.resources.getDrawable(R.drawable.help2_1) as BitmapDrawable
         val width1: Double = bd1.bitmap.width.toDouble()
         val height1: Double = bd1.bitmap.height.toDouble()
         val scale1 = intendedWidth / width1
@@ -44,7 +44,7 @@ class TwoHelpFragment : Fragment() {
         params1.gravity = Gravity.CENTER_HORIZONTAL
         help21image.setLayoutParams(params1)
 
-        val bd2 = this.resources.getDrawable(R.drawable.applogo) as BitmapDrawable
+        val bd2 = this.resources.getDrawable(R.drawable.help2_2) as BitmapDrawable
         val width2: Double = bd2.bitmap.width.toDouble()
         val height2: Double = bd2.bitmap.height.toDouble()
         val scale2 = intendedWidth / width2
@@ -54,7 +54,7 @@ class TwoHelpFragment : Fragment() {
         params2.gravity = Gravity.CENTER_HORIZONTAL
         help22image.setLayoutParams(params2)
 
-        val bd3 = this.resources.getDrawable(R.drawable.applogo) as BitmapDrawable
+        val bd3 = this.resources.getDrawable(R.drawable.help2_3) as BitmapDrawable
         val width3: Double = bd3.bitmap.width.toDouble()
         val height3: Double = bd3.bitmap.height.toDouble()
         val scale3 = intendedWidth / width3

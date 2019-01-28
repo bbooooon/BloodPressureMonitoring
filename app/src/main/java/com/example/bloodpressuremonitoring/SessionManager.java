@@ -2,13 +2,13 @@ package com.example.bloodpressuremonitoring;
 
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
-import com.example.bloodpressuremonitoring.user.MainActivity;
-import com.example.bloodpressuremonitoring.user.SigninFragment;
+import com.example.bloodpressuremonitoring.user.SigninActivity;
 
 public class SessionManager {
     // Shared Preferences
@@ -33,6 +33,7 @@ public class SessionManager {
     public static final String KEY_EMAIL = "email";
     public static final String KEY_NAME = "name";
     public static final String KEY_HN = "hnnum";
+    public static final String KEY_ADMIN = "0";
 
     // Constructor
     public SessionManager(Context context){
@@ -44,7 +45,7 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name,String email, String hn){
+    public void createLoginSession(String name,String email, String hn, String admin){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -55,6 +56,8 @@ public class SessionManager {
         editor.putString(KEY_EMAIL, email);
 
         editor.putString(KEY_HN, hn);
+
+        editor.putString(KEY_ADMIN, admin);
         // commit changes
         editor.commit();
     }
@@ -67,9 +70,9 @@ public class SessionManager {
     public void checkLogin(){
         // Check login status
         if(!this.isLoggedIn()){
-            // user is not logged in redirect him to Login Activity
-            Intent i = new Intent(_context, MainActivity.class);
+            Intent i = new Intent(_context, SigninActivity.class);
             // Closing all the Activities
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             // Add new Flag to start new Activity
@@ -92,6 +95,8 @@ public class SessionManager {
         user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
 
         user.put(KEY_HN, pref.getString(KEY_HN, null));
+
+        user.put(KEY_ADMIN, pref.getString(KEY_ADMIN, null));
         // return user
         return user;
     }
@@ -105,7 +110,7 @@ public class SessionManager {
         editor.commit();
 
         // After logout redirect user to Loing Activity
-        Intent i = new Intent(_context, MainActivity.class);
+        Intent i = new Intent(_context, SigninActivity.class);
         // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

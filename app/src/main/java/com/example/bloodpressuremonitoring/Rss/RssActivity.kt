@@ -7,8 +7,7 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.example.bloodpressuremonitoring.R
-import com.example.bloodpressuremonitoring.Rss.FeedFragment
-import com.example.bloodpressuremonitoring.user.MainActivity
+import com.example.bloodpressuremonitoring.user.SigninActivity
 
 class RssActivity : AppCompatActivity() {
 
@@ -24,7 +23,7 @@ class RssActivity : AppCompatActivity() {
 //            }
             R.id.action_logout -> {
                 finish()
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, SigninActivity::class.java)
                 startActivity(intent)
                 return true
             }
@@ -43,7 +42,7 @@ class RssActivity : AppCompatActivity() {
 
         supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragmentrss, FeedFragment.newInstance("http://rssfeeds.sanook.com/rss/feeds/sanook/health.medicine.xml/"))
+                .replace(R.id.fragmentrss, FeedFragment.newInstance("http://rssfeeds.sanook.com/rss/feeds/sanook/health.health.xml/"))
                 .commit()
 
 //        val fragment = FeedFragment()

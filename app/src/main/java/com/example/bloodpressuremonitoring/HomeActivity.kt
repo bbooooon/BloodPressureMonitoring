@@ -15,10 +15,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.example.bloodpressuremonitoring.History.AccessActivity
+import com.example.bloodpressuremonitoring.History.AdminActivity
 import com.example.bloodpressuremonitoring.History.HistoryActivity
 import com.example.bloodpressuremonitoring.Rss.RssActivity
 import com.example.bloodpressuremonitoring.classify.CameraActivity
 import com.example.bloodpressuremonitoring.classify.UserData
+import com.example.bloodpressuremonitoring.help.HelpActivity
+import com.example.bloodpressuremonitoring.user.AddUser
 import com.example.bloodpressuremonitoring.user.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -55,6 +58,64 @@ class HomeActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        session = SessionManager(applicationContext)
+        session.checkLogin()
+
+        if(session.isLoggedIn) {
+            val user = session.getUserDetails()
+            val email = user.get(SessionManager.KEY_EMAIL)
+            val name = user.get(SessionManager.KEY_NAME)
+            val admin = user.get(SessionManager.KEY_ADMIN)!!.toInt()
+            hn = user.get(SessionManager.KEY_HN)!!
+            var re_email: String = ""
+
+            if (!email.isNullOrEmpty()) {
+                val p_email = email!!.split("@")
+
+                val head = p_email[0].substring(0, 3)
+                val body = p_email[0].substring(3, p_email[0].length)
+                val rebody = body.replace("[a-z|A-Z|0-9]".toRegex(), "x")
+
+                re_email = head + rebody + "@" + p_email[1]
+            }
+
+            if (email != null) {
+                user_infotxt.text = "รหัสคนไข้ : $hn"
+                user_infotxt2.text = re_email
+
+                setImageViewFromFirebase()
+                BPObject.hnlist.clear()
+                BPObject.emaillist.clear()
+                BPObject.namelist.clear()
+                if (admin == 1) {
+                    loadingDialog = ProgressDialog.show(this, "", "loading...", true, false)
+                    val databaseReference = FirebaseDatabase.getInstance().getReference("User")
+                    databaseReference.addValueEventListener(object : ValueEventListener {
+                        override fun onCancelled(p0: DatabaseError?) {
+                        }
+
+                        override fun onDataChange(p0: DataSnapshot?) {
+                            if (p0!!.exists()) {
+                                for (i in p0.children) {
+                                    val message = i.getValue(AddUser::class.java)
+                                    if (message!!.hn != "00000000") {
+                                        BPObject.hnlist.add(message!!.hn)
+                                        BPObject.emaillist.add(message.email)
+                                        BPObject.namelist.add(message.name)
+                                    }
+                                }
+                            }
+                            loadingDialog.dismiss()
+                        }
+                    })
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -66,81 +127,97 @@ class HomeActivity : AppCompatActivity() {
         session = SessionManager(applicationContext)
         session.checkLogin()
 
-        val user = session.getUserDetails()
-        val email = user.get(SessionManager.KEY_EMAIL)
-        val aname = user.get(SessionManager.KEY_NAME)
-        hn = user.get(SessionManager.KEY_HN)!!
+        if(session.isLoggedIn) {
+            val user = session.getUserDetails()
+            val email = user.get(SessionManager.KEY_EMAIL)
+            val name = user.get(SessionManager.KEY_NAME)
+            val admin = user.get(SessionManager.KEY_ADMIN)!!.toInt()
+            hn = user.get(SessionManager.KEY_HN)!!
+            var re_email: String = ""
+            if(!email.isNullOrEmpty()) {
+                val p_email = email!!.split("@")
 
-        val p_email = email!!.split("@")
+                val head = p_email[0].substring(0, 3)
+                val body = p_email[0].substring(3, p_email[0].length)
+                val rebody = body.replace("[a-z|A-Z|0-9]".toRegex(), "x")
 
-        val head = p_email[0].substring(0, 3)
-        val body = p_email[0].substring(3, p_email[0].length)
-        val rebody = body.replace("[a-z|A-Z|0-9]".toRegex(), "x")
+                re_email = head + rebody + "@" + p_email[1]
+            }
+//            if (email != null) {
+//                user_infotxt.text = "รหัสคนไข้ : $hn"
+//                user_infotxt2.text = re_email
+//
+//                setImageViewFromFirebase()
+//                BPObject.hnlist.clear()
+//                BPObject.emaillist.clear()
+//                BPObject.namelist.clear()
+//                if (admin == 1) {
+//                    loadingDialog = ProgressDialog.show(this, "", "loading...", true, false)
+//                    val databaseReference = FirebaseDatabase.getInstance().getReference("User")
+//                    databaseReference.addValueEventListener(object : ValueEventListener {
+//                        override fun onCancelled(p0: DatabaseError?) {
+//                        }
+//
+//                        override fun onDataChange(p0: DataSnapshot?) {
+//                            if (p0!!.exists()) {
+//                                for (i in p0.children) {
+//                                    val message = i.getValue(AddUser::class.java)
+//                                    if (message!!.hn != "00000000") {
+//                                        BPObject.hnlist.add(message!!.hn)
+//                                        BPObject.emaillist.add(message.email)
+//                                        BPObject.namelist.add(message.name)
+//                                    }
+//                                }
+//                            }
+//                            loadingDialog.dismiss()
+//                        }
+//                    })
+//                }
+//            }
 
-        val re_email = head+rebody+"@"+p_email[1]
+            profile_image.setOnClickListener {
+                val intent1 = Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(intent1, PICK_IMAGE_REQUEST)
+            }
 
-        if(email != null) {
-            user_infotxt.text = "รหัสคนไข้ : $hn"
-            user_infotxt2.text = re_email
-
-            loadingDialog = ProgressDialog.show(this, "", "loading...", true, false)
-
-            setImageViewFromFirebase()
-            val dataReference = FirebaseDatabase.getInstance().getReference("UserData").child(hn)
-            dataReference.addValueEventListener(object : ValueEventListener {
-                override fun onCancelled(p0: DatabaseError?) {
-                }
-                override fun onDataChange(p0: DataSnapshot?) {
-                    val msgList = arrayListOf<UserData>()
-                    if (p0!!.exists()) {
-                        msgList.clear()
-                        BPObject.bplist.clear()
-                        BPObject.timelist.clear()
-                        for (i in p0.children) {
-                            val message = i.getValue(UserData::class.java)
-                            msgList.add(message!!)
-                            BPObject.bplist = msgList
-
-                            val date = SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").parse(message!!.runtimestamp)
-                            val dateformat = SimpleDateFormat("dd/MM/yyyy HH:mm").format(date)
-                            Log.e("date format", dateformat)
-                            BPObject.timelist.add(dateformat)
-                        }
-                    }
-                    loadingDialog.dismiss()
-                }
-            })
-        }
-
-        profile_image.setOnClickListener{
-            val intent1 = Intent(Intent.ACTION_PICK,
-                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent1, PICK_IMAGE_REQUEST)
-        }
-
-        camera_btn.setOnClickListener {
-            val intent = Intent(this, CameraActivity::class.java)
-            startActivity(intent)
-        }
-
-        history_btn.setOnClickListener {
-            if (User.access == false) {
-                val intent = Intent(this, AccessActivity::class.java)
+            camera_btn.setOnClickListener {
+                val intent = Intent(this, CameraActivity::class.java)
                 startActivity(intent)
-            } else {
-                val intent = Intent(this, HistoryActivity::class.java)
+            }
+
+            history_btn.setOnClickListener {
+                if (admin!!.toInt() == 0) {
+                    if (User.access == false) {
+                        val intent = Intent(this, AccessActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this, HistoryActivity::class.java)
+                        intent.putExtra("hn", hn)
+                        intent.putExtra("email", email)
+                        intent.putExtra("name", name)
+                        startActivity(intent)
+                    }
+                } else {
+                    val intent = Intent(this, AdminActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+
+            rss_btn.setOnClickListener {
+                val intent = Intent(this, RssActivity::class.java)
+                startActivity(intent)
+            }
+
+            help_btn.setOnClickListener {
+                val intent = Intent(this, HelpActivity::class.java)
                 startActivity(intent)
             }
         }
-
-        rss_btn.setOnClickListener {
-            val intent = Intent(this, RssActivity::class.java)
-            startActivity(intent)
-        }
-
     }
 
     private fun setImageViewFromFirebase() {
+        Log.e("file storage", "user/$hn.jpg")
         val storage = FirebaseStorage.getInstance()
         val storageReference = storage.reference.child("user/$hn.jpg")
         storageReference.getBytes(java.lang.Long.MAX_VALUE).addOnSuccessListener { bytes ->

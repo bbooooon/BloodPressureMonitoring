@@ -1,10 +1,14 @@
 package com.example.bloodpressuremonitoring.classify;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.media.MediaActionSound;
 import android.support.annotation.Nullable;
@@ -18,7 +22,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TextureView;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -26,6 +33,9 @@ import com.example.bloodpressuremonitoring.R;
 import com.example.bloodpressuremonitoring.Rss.RssActivity;
 import com.example.bloodpressuremonitoring.SessionManager;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
@@ -61,7 +71,7 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
             case R.id.action_logout:
                 finish();
                 session.logoutUser();
-//                Intent intent = new Intent(this, MainActivity.class);
+//                Intent intent = new Intent(this, SigninActivity.class);
 //                startActivity(intent);
                 break;
             default:
@@ -77,6 +87,7 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         setContentView(R.layout.activity_camera);
         Toolbar camera_toolbar = findViewById(R.id.camera_toolbar);
         setSupportActionBar(camera_toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -92,6 +103,20 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         HashMap<String, String> user = session.getUserDetails();
         String name = user.get(SessionManager.KEY_EMAIL);
 
+        final Dialog dialog = new Dialog(CameraActivity.this);
+        dialog.setTitle("การเตรียมตัวก่อนการวัดความดันโลหิต");
+        dialog.setContentView(R.layout.custom_dialog);
+
+        Button button = (Button) dialog.findViewById(R.id.button_submit);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+
         buttonCapture = findViewById(R.id.capture_btn);
         buttonFlash = findViewById(R.id.flash_btn);
         textureViewCamera = findViewById(R.id.textureView);
@@ -104,10 +129,10 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         int width = size.x/3;
         int height = width/3*4;
 
-        int left =size.x/2 - width/2;
-        int top = 0;
+        int left = size.x/2 - width/2;
+        int top = size.y/4 - height/2;
         int right = size.x/2 - width/2;
-        int bottom = size.y/2 + height/2;
+        int bottom = size.y - height - top;
 
         ImageView cropArea = findViewById(R.id.crop_imageView);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
@@ -123,25 +148,32 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         textureview.setLayoutParams(parammaters);
 
 //        buttonRss.setOnClickListener(view -> openRss());
-        buttonCapture.setOnClickListener(view ->takePicture()
-        );
+        buttonCapture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                takePicture();
+            }
+        });
         textureViewCamera.setSurfaceTextureListener(this);
         textureViewCamera.setOnClickListener(view -> refocus());
 
-        buttonFlash.setVisibility(View.GONE);
-//        buttonFlash.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (isLighOn) {
-//                    buttonFlash.setBackgroundResource(R.drawable.flashlight_off);
-//                    isLighOn = false;
-//                }
-//                else {
-//                    buttonFlash.setBackgroundResource(R.drawable.flashlight_on);
-//                    isLighOn = true;
-//                }
-//            }
-//        });
+//        buttonFlash.setVisibility(View.GONE);
+        buttonFlash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isLighOn) {
+                    isLighOn = false;
+                    buttonFlash.setBackgroundResource(R.drawable.flashlight_off);
+                    setupCamera(textureViewCamera.getWidth(), textureViewCamera.getHeight());
+                    startCameraPreview(textureViewCamera.getSurfaceTexture());
+                } else {
+                    isLighOn = true;
+                    buttonFlash.setBackgroundResource(R.drawable.flashlight_on);
+                    setupCamera(textureViewCamera.getWidth(), textureViewCamera.getHeight());
+                    startCameraPreview(textureViewCamera.getSurfaceTexture());
+                }
+            }
+        });
     }
 
     @Override
@@ -194,12 +226,12 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
     private void setupCamera(int width, int height) {
         camera = CameraUtil.openDefaultCamera();
         Camera.Parameters parameters = camera.getParameters();
-//        if (isLighOn) {
-//            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-//        }
-//        else {
-//            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-//        }
+        if (isLighOn) {
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+        }
+        else {
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+        }
 //        parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 //        Camera.Size bestPictureSize = CameraUtil.getBestPictureSize(parameters.getSupportedPictureSizes());
 
@@ -238,7 +270,8 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
         ByteArrayOutputStream stream2 = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream2);
         byte[] bytearr1 = stream2.toByteArray();
-        CameraUtil.bytedata = bytearr1;
+        CameraUtil.setData(bytearr1);
+//        CameraUtil.bytedata = bytearr1;
         Intent intent = new Intent(this, PreviewActivity.class);
         startActivity(intent);
     }
@@ -248,10 +281,17 @@ public class CameraActivity extends AppCompatActivity implements TextureView.Sur
             null,
             null,
             (img_data, camera) -> {
-                CameraUtil.setData(img_data);
-                finish();
-                Intent intent = new Intent(this, PreviewActivity.class);
-                startActivity(intent);
+//                CameraUtil.setData(img_data);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(img_data, 0, img_data.length);
+                BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
+                ImageView imgview = findViewById(R.id.imageView2);
+                imgview.setVisibility(View.VISIBLE);
+                imgview.setImageBitmap(bitmap);
+                screenShot(imgview);
+                imgview.setVisibility(View.GONE);
+//                finish();
+//                Intent intent = new Intent(this, PreviewActivity.class);
+//                startActivity(intent);
             });
     }
 

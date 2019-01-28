@@ -30,7 +30,7 @@ class ResultActivity : AppCompatActivity() {
             R.id.action_logout -> {
                 finish()
                 session!!.logoutUser()
-//                val intent = Intent(this, MainActivity::class.java)
+//                val intent = Intent(this, SigninActivity::class.java)
 //                startActivity(intent)
                 return true
             }

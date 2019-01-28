@@ -37,7 +37,8 @@
                     android:id="@+id/help1_imageView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/bg_app_logo" />
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/help1" />
 
                 <Button
                     android:id="@+id/help1_btn"

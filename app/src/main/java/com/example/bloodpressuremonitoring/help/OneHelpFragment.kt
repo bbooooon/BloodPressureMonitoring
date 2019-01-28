@@ -27,8 +27,8 @@ class OneHelpFragment : Fragment() {
 
         val bd: BitmapDrawable
 
-        help1image.setImageResource(R.drawable.applogo)
-        bd = this.resources.getDrawable(R.drawable.applogo) as BitmapDrawable
+        help1image.setImageResource(R.drawable.help1)
+        bd = this.resources.getDrawable(R.drawable.help1) as BitmapDrawable
 
 
         val sv = ScrollView(context)

@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/app_name"
+            android:text="@string/history"
             android:textColor="@android:color/background_light"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -93,7 +93,8 @@
                 android:layout_marginEnd="10dp"
                 android:background="@android:color/background_light"
                 android:iconifiedByDefault="false"
-                android:paddingBottom="2dp">
+                android:paddingBottom="2dp"
+                android:queryHint="ระบุวันหรือเวลา">
 
                 <requestFocus
                     android:layout_marginStart="10dp"

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightblue"
-    tools:context=".HomeActivity">
+    tools:context=".HomeActivity"
+    tools:layout_editor_absoluteY="25dp">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/home_toolbar"
@@ -13,9 +14,10 @@
         android:layout_height="55dp"
         android:layout_weight="1"
         android:background="@color/toolbarblue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="230dp">
+        tools:ignore="MissingConstraints">
 
         <TextView
             android:id="@+id/toolbarText2"
@@ -82,58 +84,71 @@
     <TableLayout
         android:id="@+id/tableLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="317dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_weight="1"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center">
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp">
 
-            <Button
-                android:id="@+id/camera_btn"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="15dp"
-                android:background="@drawable/rounded_corner"
-                android:gravity="center"
-                android:paddingTop="30dp"
-                android:paddingBottom="30dp"
-                android:text="ตรวจสอบยา"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="64dp"
-                tools:layout_editor_absoluteY="81dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/history_btn"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="15dp"
-                android:background="@drawable/rounded_corner"
-                android:gravity="center"
-                android:paddingTop="30dp"
-                android:paddingBottom="30dp"
-                android:text="ค้นหายา"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="64dp"
-                tools:layout_editor_absoluteY="81dp" />
+                <Button
+                    android:id="@+id/camera_btn"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@drawable/camera_btn"
+                    android:gravity="center"
+                    android:paddingTop="75dp"
+                    android:paddingBottom="5dp"
+                    android:text="ถ่ายภาพ"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:layout_editor_absoluteX="64dp"
+                    tools:layout_editor_absoluteY="81dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/history_btn"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@drawable/history_btn"
+                    android:gravity="center"
+                    android:paddingTop="75dp"
+                    android:paddingBottom="5dp"
+                    android:text="ประวัติการวัด"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:layout_editor_absoluteX="64dp"
+                    tools:layout_editor_absoluteY="81dp" />
+            </LinearLayout>
 
 
         </TableRow>
@@ -141,43 +156,58 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center">
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp">
 
-            <Button
-                android:id="@+id/rss_btn"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="15dp"
-                android:background="@drawable/rounded_corner"
-                android:gravity="center"
-                android:paddingTop="30dp"
-                android:paddingBottom="30dp"
-                android:text="ข่าวยาน่ารู้"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="64dp"
-                tools:layout_editor_absoluteY="81dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/help_btn"
-                android:layout_width="110dp"
-                android:layout_height="110dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="15dp"
-                android:background="@drawable/rounded_corner"
-                android:gravity="center"
-                android:paddingTop="30dp"
-                android:paddingBottom="30dp"
-                android:text="ช่วยเหลือ"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="64dp"
-                tools:layout_editor_absoluteY="81dp" />
+                <Button
+                    android:id="@+id/rss_btn"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@drawable/health_btn"
+                    android:gravity="center"
+                    android:paddingTop="75dp"
+                    android:paddingBottom="5dp"
+                    android:text="สุขภาพน่ารู้"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:layout_editor_absoluteX="64dp"
+                    tools:layout_editor_absoluteY="81dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/help_btn"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@drawable/help_btn"
+                    android:gravity="center"
+                    android:paddingTop="75dp"
+                    android:paddingBottom="5dp"
+                    android:text="ช่วยเหลือ"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:layout_editor_absoluteX="64dp"
+                    tools:layout_editor_absoluteY="81dp" />
+            </LinearLayout>
 
         </TableRow>
 

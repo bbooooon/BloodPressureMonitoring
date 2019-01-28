@@ -38,7 +38,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:src="@drawable/bg_app_logo" />
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/help4_1" />
 
                 <Button
                     android:id="@+id/help4_btn"
@@ -49,7 +50,7 @@
                     android:layout_marginEnd="40dp"
                     android:layout_marginBottom="50dp"
                     android:background="@drawable/round_button"
-                    android:text="ไปที่หน้าข่าวยาน่ารู้" />
+                    android:text="ไปที่หน้าสุขภาพน่ารู้" />
             </LinearLayout>
         </ScrollView>
     </android.support.constraint.ConstraintLayout>

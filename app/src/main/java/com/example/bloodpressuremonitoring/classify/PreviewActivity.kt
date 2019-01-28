@@ -44,7 +44,7 @@ class PreviewActivity : AppCompatActivity() {
             R.id.action_logout -> {
                 finish()
                 session.logoutUser()
-//                val intent = Intent(this, MainActivity::class.java)
+//                val intent = Intent(this, SigninActivity::class.java)
 //                startActivity(intent)
                 return true
             }
@@ -64,77 +64,122 @@ class PreviewActivity : AppCompatActivity() {
         session = SessionManager(applicationContext)
 
         var bitmap = BitmapFactory.decodeByteArray(CameraUtil.bytedata, 0, CameraUtil.bytedata.size)
-        val angle: Int = 90
-        bitmap = RotateBitmap(bitmap,angle.toFloat())
 
         val display = windowManager.defaultDisplay
         val size = Point()
         display.getSize(size)
 
-        val displayratio :Double = ((size.y.toDouble()/size.x.toDouble())*10)
-        Log.e("display ratio ::: ", displayratio.toString())
+        val angle: Int = 90
+        bitmap = RotateBitmap(bitmap,angle.toFloat())
 
-        val ratiow:Double = bitmap.width.toDouble()/size.x.toDouble()
-        val ratioh:Double = bitmap.height.toDouble()/size.y.toDouble()
+        Log.e("original bitmap size", (bitmap.width).toString() + " x " + (bitmap.height))
 
-        Log.e("display ratio w,h : ", ratiow.toString()+" , "+ratioh.toString())
-
-        Log.e("display size", size.x.toString() + " x " + size.y)
+        bitmap = Bitmap.createBitmap(bitmap, (bitmap.width/3-((size.y-bitmap.width)/6)).toInt(), 0,
+                (bitmap.width/3+(size.y-bitmap.width)/3).toInt(), bitmap.height.toInt())
         Log.e("bitmap size", (bitmap.width).toString() + " x " + (bitmap.height))
 
-//@todo trim image side to fit screen
-        var bitmapwidth :Double? = null
-        var bitmapheight :Double? = null
-        if (displayratio.toInt() in 12..14){
-            Log.e("decision ", "enter 1")
-            bitmapwidth = size.x*ratiow
-            bitmapheight = size.y*ratioh
-        }
-        else if (displayratio.toInt() in 16..18){
-            Log.e("decision ", "enter 2")
-            bitmapwidth = size.x*ratiow//*0.85//*0.90
-            bitmapheight = size.y*ratioh
-        }
-        else if (displayratio.toInt() in 19..21){
-            Log.e("decision ", "enter 3")
-            bitmapwidth = size.x*ratiow*0.67
-            bitmapheight = size.y*ratioh
-        }
-        else{
-            Log.e("decision ", "enter 4")
-            bitmapwidth = size.x*ratiow
-            bitmapheight = size.y*ratioh
-        }
+        Log.e("ratio", (size.x/bitmap.width).toString() + " x " + size.y/bitmap.height)
 
-        val sidew = (bitmap.width - bitmapwidth!!)/2
-        val sideh = (bitmap.height - bitmapheight!!)/2
+        bitmap = scaleBitmap(bitmap, size.x.toFloat(),size.y.toFloat())
+        Log.e("scale bitmap size", (bitmap.width).toString() + " x " + (bitmap.height))
+        var width = (bitmap.width / 3).toInt()
+        var height = width / 3 * 4
 
-        val ratio:Double = bitmapwidth!!.toDouble()/size.x.toDouble()
-//        val ratio:Double = bitmap.width!!.toDouble()/size.x.toDouble()
-        val width = size.x/3 * ratio
-        val height = width / 3 * 4
+//        val displayratio :Double = ((size.y.toDouble()/size.x.toDouble())*10)
+//        Log.e("display ratio ::: ", displayratio.toString())
+//
+        val left = (size.x / 2) - width / 2
+        val top = (size.y / 4) - height/2
+//        val right = size.x / 2 - width / 2
+//        val bottom = size.y - height - top
 
-//        Log.e("display side origin", sideh.toString() + " x " + sidew.toString())
+        Log.e("left top : ", left.toString()+" , "+top.toString())
 
-        var cropside = Bitmap.createBitmap(bitmap, sidew.toInt(),sideh.toInt(),(bitmapwidth!!).toInt(), (bitmapheight!!-sideh).toInt())
-//        var cropside = Bitmap.createBitmap(bitmap, 0,0,(bitmap.width!!).toInt(), bitmap.height!!.toInt())
+//        var bitmapwidth :Double? = bitmap.width.toDouble()
+//        var bitmapheight :Double? = bitmap.height.toDouble()
+//        if (displayratio.toInt() in 12..14){
+//            Log.e("decision ", "enter 1")
+//            bitmapwidth = size.x*ratiow
+//            bitmapheight = size.y*ratioh
+//        }
+//        else if (displayratio.toInt() in 16..18){
+//            Log.e("decision ", "enter 2")
+//            bitmapwidth = size.x*ratiow*0.85
+//            bitmapheight = size.y*ratioh*0.85
+//        }
+//        else if (displayratio.toInt() in 19..21){
+//            Log.e("decision ", "enter 3")
+//            bitmapwidth = size.x*ratiow*0.67
+//            bitmapheight = size.y*ratioh*0.67
+//        }
+//        else{
+//            Log.e("decision ", "enter 4")
+//            bitmapwidth = size.x*ratiow
+//            bitmapheight = size.y*ratioh
+//        }
+//
+//        val sidew = (bitmap.width - bitmapwidth!!)/2
+//        val sideh = (bitmap.height - bitmapheight!!)/2
+//
+//        val ratio:Double = bitmapwidth!!.toDouble()/size.x.toDouble()
+//        val width = size.x/3 * ratiow
+//        var height = size.y/3 * ratioh
+////        val height = (width * 3 / 4) * ratioh
+//
+//        var cropside = Bitmap.createBitmap(bitmap, sidew.toInt(),sideh.toInt(),(bitmapwidth!!).toInt(), (bitmapheight!!).toInt())
 
-//        //@todo remove when test done
-//        val stream1 = ByteArrayOutputStream()
-//        cropside.compress(Bitmap.CompressFormat.PNG, 100, stream1)
-//        val bytearr = stream1.toByteArray()
-//        CameraUtil.bytedata = bytearr
-//        val file2 = CameraUtil.savePicture("test2_");
-//        val orientation2 = CameraUtil.getCameraDisplayOrientation(this, cameraId)
-//        CameraUtil.setImageOrientation(file2, orientation2)
-//        CameraUtil.updateMediaScanner(this, file2)
-//        fpath = file2.absolutePath
+//@todo old one down
+//        var bitmapwidth :Double? = bitmap.width.toDouble()
+//        var bitmapheight :Double? = bitmap.height.toDouble()
+//        if (displayratio.toInt() in 12..14){
+//            Log.e("decision ", "enter 1")
+//            bitmapwidth = size.x*ratiow
+//            bitmapheight = size.y*ratioh
+//        }
+//        else if (displayratio.toInt() in 16..18){
+//            Log.e("decision ", "enter 2")
+//            bitmapwidth = size.x*ratiow//*0.85//*0.90
+//            bitmapheight = size.y*ratioh
+//        }
+//        else if (displayratio.toInt() in 19..21){
+//            Log.e("decision ", "enter 3")
+//            bitmapwidth = size.x*ratiow*0.67
+//            bitmapheight = size.y*ratioh
+//        }
+//        else{
+//            Log.e("decision ", "enter 4")
+//            bitmapwidth = size.x*ratiow
+//            bitmapheight = size.y*ratioh
+//        }
+//
+//        val sidew = (bitmap.width - bitmapwidth!!)/2
+//        val sideh = (bitmap.height - bitmapheight!!)/2
+//
+//        val ratio:Double = bitmapwidth!!.toDouble()/size.x.toDouble()
+//        val width = size.x/3 * ratio
+//        val height = width / 3 * 4
+//
+////        Log.e("display side origin", sideh.toString() + " x " + sidew.toString())
+//
+//        var cropside = Bitmap.createBitmap(bitmap, sidew.toInt(),sideh.toInt(),(bitmapwidth!!).toInt(), (bitmapheight!!-sideh).toInt())
 
-        val x:Int = ((bitmapwidth!! / 2) - (width / 2)).toInt()
-//        val x:Int = ((bitmap.width!! / 2) - (width / 2)).toInt()
-        val y:Int = 0
-        var resize = Bitmap.createBitmap(cropside, x, y,width.toInt(), height.toInt())
-        resize = Bitmap.createScaledBitmap(resize, (resize.width*0.7).toInt(), (resize.height*0.7).toInt(), false)
+        //@todo remove when test done
+        val stream1 = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream1)
+        val bytearr = stream1.toByteArray()
+        CameraUtil.bytedata = bytearr
+        val file2 = CameraUtil.savePicture("test2_");
+        val orientation2 = CameraUtil.getCameraDisplayOrientation(this, cameraId)
+        CameraUtil.setImageOrientation(file2, orientation2)
+        CameraUtil.updateMediaScanner(this, file2)
+        fpath = file2.absolutePath
+//
+//        val x:Int = ((cropside.width!! / 2) - (width / 2)).toInt()
+//        val y:Int = ((cropside.height!! / 4) - (height / 2)).toInt()
+//        height = (width * 3 / 4) * ratioh
+
+        var resize = Bitmap.createBitmap(bitmap, left.toInt(), top.toInt(), width.toInt(), height.toInt())
+        resize = Bitmap.createScaledBitmap(resize, (resize.width).toInt(), (resize.height).toInt(), false)
 //        resize = lightenBitMap(resize)
 
         //@todo remove when test done
@@ -211,35 +256,26 @@ class PreviewActivity : AppCompatActivity() {
         }
     }
 
-    fun ScaleBitmap(bm: Bitmap, width:Int, height: Int): Bitmap{
-        val background = Bitmap.createBitmap(width as Int, height as Int, Bitmap.Config.ARGB_8888)
-
-        val originalWidth = bm.getWidth()
-        val originalHeight = bm.getHeight()
-
-        val canvas = Canvas(background)
-
-        val scale = (width / originalWidth).toFloat()
-
-        val xTranslation = 0.0f
-        val yTranslation = (height - originalHeight * scale) / 2.0f
-
-        val transformation = Matrix()
-        transformation.postTranslate(xTranslation, yTranslation)
-        transformation.preScale(scale, scale)
-
-        val paint = Paint()
-        paint.isFilterBitmap = true
-
-        canvas.drawBitmap(bm, transformation, paint)
-
-        return background
-    }
-
     fun RotateBitmap(source: Bitmap, angle: Float): Bitmap {
         val matrix = Matrix()
         matrix.postRotate(angle)
         return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+    }
+
+    fun scaleBitmap(bitmapToScale: Bitmap?, newWidth: Float, newHeight: Float): Bitmap? {
+        if (bitmapToScale == null)
+            return null
+        //get the original width and height
+        val width = bitmapToScale.width
+        val height = bitmapToScale.height
+        // create a matrix for the manipulation
+        val matrix = Matrix()
+
+        // resize the bitmap
+        matrix.postScale(newWidth / width, newHeight / height)
+
+        // recreate the new Bitmap and set it back
+        return Bitmap.createBitmap(bitmapToScale, 0, 0, bitmapToScale.width, bitmapToScale.height, matrix, true)
     }
 
     private fun lightenBitMap(bm:Bitmap): Bitmap {

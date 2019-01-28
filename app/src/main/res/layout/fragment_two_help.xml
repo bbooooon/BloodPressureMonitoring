@@ -38,21 +38,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:src="@drawable/bg_app_logo" />
+                    android:src="@drawable/help2_1" />
 
                 <ImageView
                     android:id="@+id/help2_2_imageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:src="@drawable/bg_app_logo" />
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/help2_2" />
 
                 <ImageView
                     android:id="@+id/help2_3_imageView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="top"
-                    android:src="@drawable/bg_app_logo" />
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/help2_3" />
 
                 <Button
                     android:id="@+id/help2_btn"
@@ -63,7 +65,7 @@
                     android:layout_marginEnd="40dp"
                     android:layout_marginBottom="50dp"
                     android:background="@drawable/round_button"
-                    android:text="ไปที่หน้าตรวจสอบยา" />
+                    android:text="ไปที่หน้าถ่ายภาพ" />
             </LinearLayout>
         </ScrollView>
 

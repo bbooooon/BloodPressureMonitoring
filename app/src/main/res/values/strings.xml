@@ -1,3 +1,36 @@
 <resources>
     <string name="app_name">BloodPressureMonitoring</string>
+
+    <string name="camera">ถ่ายภาพความดัน</string>
+    <string name="history">ประวัติความดัน</string>
+    <string name="rss">สุขภาพน่ารู้</string>
+    <string name="help">ช่วยเหลือ</string>
+
+    <string-array name="gender_list">
+        <item>เพศ</item>
+        <item>ชาย</item>
+        <item>หญิง</item>
+    </string-array>
+
+    <string-array name="blood_list">
+        <item>หมู่โลหิต</item>
+        <item>A</item>
+        <item>B</item>
+        <item>O</item>
+        <item>AB</item>
+    </string-array>
+
+
+    <string name="resetpass_instruction">ระบุอีเมลที่ใช้เข้าระบบและกดปุ่มด้านล่าง เพื่อรอรับอีเมลยืนยันคำขอเปลี่ยนรหัสผ่าน</string>
+
+
+    <string name="dialog_title">การเตรียมตัว\nก่อนการวัดความดันโลหิต</string>
+
+    <string name="pressure_instruction">1. ก่อนวัดความดันประมาณ 30 นาที ไม่ควรดื่มกาแฟ เครื่องดื่มบำรุงกำลังที่มีคาเฟอีน หรือเครื่องดื่มแอลกอฮอล์ ไม่ออกกำลังกาย ไม่เครียด ไม่โกรธ\n\n
+    2. นั่งพักก่อนวัดความดันประมาณ 5-15 นาที\n\n
+    3. หากปวดปัสสาวะควรปัสสาวะก่อนวัดความดัน\n\n
+    4. ไม่ควรพูดคุยขณะวัดความดัน
+    </string>
+
+
 </resources>

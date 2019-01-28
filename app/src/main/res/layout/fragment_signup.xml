@@ -6,133 +6,161 @@
     android:id="@+id/fragment_signup"
     tools:context=".user.SignupFragment">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:orientation="vertical">
 
-        <Space
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="15dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/id_input"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:background="@android:color/background_light"
-            android:ems="10"
-            android:hint="หมายเลขเวชระเบียน"
-            android:inputType="number"
-            android:padding="10dp" />
+            <EditText
+                android:id="@+id/name_input"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="0.65"
+                android:background="@android:color/background_light"
+                android:ems="10"
+                android:hint="ชื่อ*"
+                android:inputType="textPersonName"
+                android:padding="10dp" />
 
-        <Space
+            <EditText
+                android:id="@+id/surname_input"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="0.35"
+                android:background="@android:color/background_light"
+                android:ems="10"
+                android:hint="นามสกุล*"
+                android:inputType="textPersonName"
+                android:padding="10dp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/id_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="0.4"
+                android:background="@android:color/background_light"
+                android:ems="10"
+                android:hint="หมายเลขเวชระเบียน*"
+                android:inputType="number"
+                android:padding="10dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="3"
+                android:background="@color/cardview_light_background"
+                android:orientation="vertical">
+
+                <Spinner
+                    android:id="@+id/gender_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_weight="3"
+                    android:ems="10"
+                    android:hint="gender"
+                    tools:layout_editor_absoluteX="332dp"
+                    tools:layout_editor_absoluteY="5dp" />
+            </LinearLayout>
+
+        </LinearLayout>
 
         <EditText
             android:id="@+id/email_input"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginRight="20dp"
+            android:layout_marginBottom="5dp"
             android:background="@android:color/background_light"
             android:ems="10"
-            android:hint="อีเมล"
+            android:hint="อีเมล*"
             android:inputType="textEmailAddress"
             android:padding="10dp" />
 
         <EditText
-            android:id="@+id/name_input"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="20dp"
-            android:background="@android:color/background_light"
-            android:ems="10"
-            android:hint="ชื่อ"
-            android:inputType="textPersonName"
-            android:padding="10dp" />
-
-        <EditText
-            android:id="@+id/surname_input"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="20dp"
-            android:background="@android:color/background_light"
-            android:ems="10"
-            android:hint="นามสกุล"
-            android:inputType="textPersonName"
-            android:padding="10dp" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
-
-        <EditText
             android:id="@+id/pass_input"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
             android:background="@android:color/background_light"
             android:ems="10"
-            android:hint="รหัสผ่าน"
+            android:hint="รหัสผ่าน*"
             android:inputType="textPassword"
             android:padding="10dp" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
 
         <EditText
             android:id="@+id/conpass_input"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
             android:background="@android:color/background_light"
             android:ems="10"
-            android:hint="ยืนยันรหัสผ่าน"
+            android:hint="ยืนยันรหัสผ่าน*"
             android:inputType="textPassword"
             android:padding="10dp" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="15dp" />
-
         <Button
-            android:id="@+id/signup_submit_btn"
-            android:layout_width="250dp"
+            android:id="@+id/signup_next_btn"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/round_button"
-            android:text="สมัครสมาชิก"
-            android:textSize="16sp" />
+            android:layout_gravity="bottom|center"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/green_button"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="ดำเนินการต่อ"
+            android:textColor="@color/common_google_signin_btn_text_dark_default"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="10dp">
+
     </ScrollView>
+
 </FrameLayout>

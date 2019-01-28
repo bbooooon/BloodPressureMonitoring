@@ -35,7 +35,7 @@ class HelpActivity: AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (mPager!!.getCurrentItem() === 0) {
+        if (mPager!!.currentItem === 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed()
@@ -46,7 +46,7 @@ class HelpActivity: AppCompatActivity() {
     }
 
     private class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
-        private val NUM_PAGES = 6
+        private val NUM_PAGES = 4
 
         override fun getItem(position: Int): Fragment? {
             if (position == 0)

@@ -17,8 +17,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_history.*
 
 class HistoryActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
-
-    private var list: String? = null
     var adapter: ListViewAdapter? = null
 
     override fun onBackPressed() {
@@ -80,7 +78,7 @@ class HistoryActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 FirebaseAuth.getInstance().signOut()
                 finish()
                 session.logoutUser()
-//                val intent = Intent(this, MainActivity::class.java)
+//                val intent = Intent(this, SigninActivity::class.java)
 //                startActivity(intent)
                 return true
             }
@@ -97,12 +95,10 @@ class HistoryActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         supportActionBar!!.setDisplayShowTitleEnabled(false)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        session = SessionManager(applicationContext)
-
-        val user = session.userDetails
-        val email = user.get(SessionManager.KEY_EMAIL)
-        val aname = user.get(SessionManager.KEY_NAME)
-        val hn = user.get(SessionManager.KEY_HN)
+        val intent1 = intent.extras
+        val email = intent1.getString("email")
+        val aname = intent1.getString("name")
+        val hn = intent1.getString("hn")
 
         val parts = aname!!.split(" ")
         val name = parts[0]
